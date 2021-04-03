@@ -14,6 +14,47 @@ use PHPUnit\Framework\TestCase;
  */
 class ArgvTest extends TestCase {
 	/**
+	 * Test to extract $argv to a raw array, keeping the position of arguments.
+	 */
+	function testExtractArgv() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=");
+		$extracted = array("positional01", "positional02", "date"=>"2021-01-01", "funrun"=>true, "novalue"=>"");
+		$this->assertEquals($extracted, Argv::extractArgv($argv));
+	}
+	
+	/**
+	 * Tests if an empty $argv results in an empty argument array.
+	 */
+	function testExtractArgvEmpty() {
+		$this->assertEquals(array(), Argv::extractArgv(array("example.php")));
+	}
+	
+	/**
+	 * Test if exception is thrown if user provides a single -- without a value.
+	 */
+	function testExtractArgvNoName() {
+		$this->expectException(ArgvException::class);
+		Argv::extractArgv(array("example.php", "--"));
+	}
+	
+	/**
+	 * Checks if --help is contained within $argv.
+	 */
+	function testHasHelp() {
+		$argv = array("example.php", "--help");
+		$this->assertEquals(true, Argv::hasHelp($argv));
+	}
+	
+	/**
+	 * Checks if --help is not contained within $argv.
+	 */
+	function testHasNoHelp() {
+		$argv = array("example.php", "--test");
+		$this->assertEquals(FALSE, Argv::hasHelp($argv));
+	}
+
+
+	/**
 	 * Tests to define three boolean parameter, using them in $argv and check
 	 * whether they equal TRUE. 
 	 */
@@ -75,7 +116,7 @@ class ArgvTest extends TestCase {
 		$argvImport = new Argv(array("example.php", "--input=/root/inputfile.txt"), $genericArgv);
 		$this->assertEquals($argvImport->getValue("input"), "/root/inputfile.txt");
 	}
-	
+
 	/**
 	 * Some arguments are optional. If $argv does not contain them, no error is
 	 * thrown when constructing Argv, and Argv::hasValue is false.
@@ -297,6 +338,4 @@ class ArgvTest extends TestCase {
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->assertEquals("7200", $argvImport->getValue("time"));
 	}
-
-	
 }

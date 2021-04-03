@@ -27,9 +27,57 @@ class Argv {
 		$this->validate();
 		$this->convert();
 	}
+	/**
+	 * Parses $argv and returns array
+	 * 
+	 * Argv::extractArgv extracts array from $argv, keeping the order of
+	 * arguments. Positional arguments will have a numeric index, boolean and
+	 * named arguments a associative index.
+	 * Note that this does no sanity checks whatsoever beside malformed
+	 * arguments.
+	 * @param array $argv
+	 * @return array
+	 * @throws ArgvException
+	 */
+	static function extractArgv(array $argv): array {
+		$raw = array();
+		unset($argv[0]);
+		foreach($argv as $key => $value) {
+			if($value==="--") {
+				throw new ArgvException("Named argument with no name found (--)");
+			}
+			if(substr($value, 0, 2)=="--") {
+				$exp = explode("=", $value, 2);
+				if(count($exp)==2) {
+					$raw[substr($exp[0], 2)] = $exp[1];
+					continue;
+				}
+				$raw[substr($exp[0], 2)] = true;
+			continue;
+			}
+			$raw[] = $value;
+		}
+	return $raw;
+	}
+	
+	/**
+	 * Check for --help
+	 * 
+	 * This function checks whether boolean argument --help is present within
+	 * a call. This allows you to exit your script early with an online help.
+	 * @param array $argv
+	 * @return bool
+	 */
+	static function hasHelp(array $argv): bool {
+		$extract = self::extractArgv($argv);
+	return isset($extract["help"]) && $extract["help"]===TRUE;
+	}
 	
 	private function getAvailable() {
 		foreach($this->argv as $key => $value) {
+			if($value==="--") {
+				throw new ArgvException("Parameter with no name found (--)");
+			}
 			if(substr($value, 0, 2)=="--") {
 				$this->getAvailableNamedOrBoolean($value);
 				continue;
