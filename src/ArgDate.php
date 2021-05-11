@@ -7,7 +7,6 @@
 
 class ArgDate extends ArgGeneric {
 	public function __construct() {
-		parent::__construct();
 		$this->setValidate(new ValidateDate(ValidateDate::ISO));
 	}
 }

@@ -11,7 +11,6 @@ class ArgFile extends ArgGeneric implements Validate {
 	const TYPE_FILE = 1;
 	const TYPE_DIRECTORY = 2;
 	function __construct() {
-		parent::__construct();
 		parent::setValidate($this);
 	}
 
