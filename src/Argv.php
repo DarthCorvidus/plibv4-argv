@@ -34,12 +34,9 @@ class Argv {
 	}
 	
 	private function import() {
-		#$this->availableNamed = $this->importNamed();
 		$this->availableNamed = $this->importNamed();
 		$this->availableBoolean = $this->importBoolean();
 		$this->availablePositional = $this->importPositional();
-		#var_dump($this->availableBoolean);
-		#print_r($this->availableBoolean);
 	}
 	
 	private function importBoolean(): array {
@@ -165,146 +162,6 @@ class Argv {
 	return isset($extract["help"]) && $extract["help"]===TRUE;
 	}
 	
-	private function getAvailable() {
-		foreach($this->argv as $key => $value) {
-			if($value==="--") {
-				throw new ArgvException("Parameter with no name found (--)");
-			}
-			if(substr($value, 0, 2)=="--") {
-				$this->getAvailableNamedOrBoolean($value);
-				continue;
-			}
-			$this->availablePositional[] = $value;
-		}
-		$this->getDefaults();
-	}
-	
-	private function getDefaults() {
-		foreach ($this->model->getArgNames() as $name) {
-			if(isset($this->availableNamed[$name])) {
-				continue;
-			}
-			if(!$this->model->getNamedArg($name)->hasDefault()) {
-				continue;
-			}
-			/**
-			 * Usually, default values will be set by programmers, not users.
-			 * If validation is set, it will be run against the default value
-			 * here; the default value is supposed to be in the same format that
-			 * the user should use.
-			 * At a later point, Argv would throw an ArgvException, but this
-			 * error is a coding error, therefore it will be checked & handled
-			 * here.
-			 */
-			$default = $this->model->getNamedArg($name)->getDefault();
-			if($this->model->getNamedArg($name)->hasValidate()) {
-				try {
-					$this->model->getNamedArg($name)->getValidate()->validate($default);
-				} catch (ValidateException $ex) {
-					throw new InvalidArgumentException("default value for '".$name."' doesn't validate");
-				}
-			}
-			$this->availableNamed[$name] = $default;
-		}
-	}
-	
-	private function getAvailableNamedOrBoolean(string $value) {
-		$exp = explode("=", $value, 2);
-		if(count($exp)==1) {
-			$this->availableBoolean[] = substr($value, 2);
-			return;
-		}
-		$this->availableNamed[substr($exp[0], 2)] = $exp[1];
-	}
-	
-	private function sanityCheck() {
-		$this->booleanSanity();
-		$this->positionalSanity();
-		$this->namedSanity();
-	}
-	
-	private function booleanSanity() {
-		$defined = $this->model->getBoolean();
-		foreach($this->availableBoolean as $value) {
-			if(!in_array($value, $defined)) {
-				throw new ArgvException("unknown boolean parameter --".$value);
-			}
-		}
-	}
-	
-	private function positionalSanity() {
-		$defined = $this->model->getPositionalCount();
-		for($i=0;$i<$defined;$i++) {
-			if(!isset($this->availablePositional[$i])) {
-				throw new ArgvException("Argument ".($i+1)." (".$this->model->getPositionalName($i).") missing");
-			}
-		}
-		if(count($this->availablePositional)>$defined) {
-			throw new ArgvException("Argument ".($defined+1)." not expected");
-		}
-	}
-	
-	private function namedSanity() {
-		$defined = $this->model->getArgNames();
-		foreach($defined as $name) {
-			$arg = $this->model->getNamedArg($name);
-			if(!isset($this->availableNamed[$name]) && $arg->isMandatory()) {
-				throw new ArgvException("mandatory argument --".$name." missing");
-			}
-		}
-		foreach (array_keys($this->availableNamed) as $value) {
-			if(!in_array($value, $defined)) {
-				throw new ArgvException("argument --".$value." not expected");
-			}
-		}
-	}
-	
-	private function validate() {
-		foreach($this->availablePositional as $pos => $value) {
-			$arg = $this->model->getPositionalArg($pos);
-			if(!$arg->hasValidate()) {
-				continue;
-			}
-			try {
-				$arg->getValidate()->validate($value);
-			} catch (ValidateException $e) {
-				throw new ArgvException("argument ".($pos+1)." (".$this->model->getPositionalName($pos)."): ".$e->getMessage());
-			}
-		}
-
-		foreach($this->availableNamed as $name => $value) {
-			$arg = $this->model->getNamedArg($name);
-			if(!$arg->hasValidate()) {
-				continue;
-			}
-			try {
-				$arg->getValidate()->validate($value);
-			} catch (ValidateException $e) {
-				throw new ArgvException("--".$name.": ".$e->getMessage());
-			}
-			
-		}
-
-	}
-
-	private function convert() {
-		foreach($this->availablePositional as $pos => $value) {
-			$arg = $this->model->getPositionalArg($pos);
-			if(!$arg->hasConvert()) {
-				continue;
-			}
-			$this->availablePositional[$pos] = $arg->getConvert()->convert($this->availablePositional[$pos]);
-		}
-		foreach($this->availableNamed as $name => $value) {
-			
-			$arg = $this->model->getNamedArg($name);
-			if(!$arg->hasConvert()) {
-				continue;
-			}
-			$this->availableNamed[$name] = $arg->getConvert()->convert($this->availableNamed[$name]);
-		}
-	}
-
 	/**
 	 * Checks whether a certain parameter is available or not. A parameter is
 	 * available if it was used by the calling user or if it's ArgModel has a
