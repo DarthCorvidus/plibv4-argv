@@ -73,9 +73,9 @@ class Argv {
 					$result[$value] = $uservalue->getValue();
 				}
 			} catch (MandatoryException $e) {
-				throw new ArgvException($e->getMessage());
+				throw new ArgvException("--".$value.": ".$e->getMessage());
 			} catch (ValidateException $e) {
-				throw new ArgvException($e->getMessage());
+				throw new ArgvException("--".$value.": ".$e->getMessage());
 			}
 		}
 		foreach($extract as $key => $value) {
