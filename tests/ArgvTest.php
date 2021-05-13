@@ -37,6 +37,30 @@ class ArgvTest extends TestCase {
 		Argv::extractArgv(array("example.php", "--"));
 	}
 	
+	function testExtractArgvNamed() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expect = array();
+		$expect["date"] = "2021-01-01";
+		$expect["novalue"] = "";
+		$expect["conf"] = "/etc/example.conf";
+		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_NAMED));
+	}
+
+	function testExtractArgvBoolean() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expect = array();
+		$expect["funrun"] = TRUE;
+		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_BOOL));
+	}
+
+	function testExtractArgvPositional() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expect = array();
+		$expect[0] = "positional01";
+		$expect[1] = "positional02";
+		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_POS));
+	}
+	
 	/**
 	 * Checks if --help is contained within $argv.
 	 */
@@ -112,7 +136,7 @@ class ArgvTest extends TestCase {
 	 */
 	function testNamedArg() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addNamedArg("input", new ArgGeneric());
+		$genericArgv->addNamedArg("input", new UserValue());
 		$argvImport = new Argv(array("example.php", "--input=/root/inputfile.txt"), $genericArgv);
 		$this->assertEquals($argvImport->getValue("input"), "/root/inputfile.txt");
 	}
@@ -123,7 +147,7 @@ class ArgvTest extends TestCase {
 	 */
 	function testOptionalNamedArg() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addNamedArg("optional", new ArgGeneric());
+		$genericArgv->addNamedArg("optional", new UserValue(FALSE));
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->assertEquals($argvImport->hasValue("optional"), FALSE);
 	}
@@ -134,7 +158,7 @@ class ArgvTest extends TestCase {
 	 */
 	function testOptionalNamedArgAccess() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addNamedArg("optional", new ArgGeneric());
+		$genericArgv->addNamedArg("optional", new UserValue(FALSE));
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->expectException(OutOfRangeException::class);
 		$argvImport->getValue("optional");		
@@ -146,10 +170,10 @@ class ArgvTest extends TestCase {
 	 */
 	function testOptionalDefaulted() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setDefault("graceful");
+		$userValue = new UserValue();
+		$userValue->setValue("graceful");
 		
-		$genericArgv->addNamedArg("shutdown", $genericArg);
+		$genericArgv->addNamedArg("shutdown", $userValue);
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->assertEquals("graceful", $argvImport->getValue("shutdown"));
 	}
@@ -160,10 +184,11 @@ class ArgvTest extends TestCase {
 	 */
 	function testDefaultedEmpty() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setDefault("graceful");
+		$userValue = new UserValue();
+		$userValue->setValue("graceful");
 		
-		$genericArgv->addNamedArg("shutdown", $genericArg);
+		$genericArgv->addNamedArg("shutdown", $userValue);
+		$this->expectException(MandatoryException::class);
 		$argvImport = new Argv(array("example.php", "--shutdown="), $genericArgv);
 		$this->assertEquals("", $argvImport->getValue("shutdown"));
 	}
@@ -175,10 +200,10 @@ class ArgvTest extends TestCase {
 	 */
 	function testOptionalDefaultOverrule() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setDefault("graceful");
+		$userValue = new UserValue();
+		$userValue->setValue("graceful");
 		
-		$genericArgv->addNamedArg("shutdown", $genericArg);
+		$genericArgv->addNamedArg("shutdown", $userValue);
 		$argvImport = new Argv(array("example.php", "--shutdown=hard"), $genericArgv);
 		$this->assertEquals("hard", $argvImport->getValue("shutdown"));
 	}
@@ -188,10 +213,9 @@ class ArgvTest extends TestCase {
 	 */
 	function testNamedArgMandatoryMissing() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setMandatory(TRUE);
-		$genericArgv->addNamedArg("frontend", $genericArg);
-		$this->expectException(ArgvException::class);
+		$userValue= new UserValue();
+		$genericArgv->addNamedArg("frontend", $userValue);
+		$this->expectException(MandatoryException::class);
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 	}
 
@@ -201,9 +225,9 @@ class ArgvTest extends TestCase {
 	 */
 	#function testNamedArgMandatoryEmpty() {
 	#	$genericArgv = new ArgvGeneric();
-	#	$genericArg = new ArgGeneric();
+	#	$userValue= new ArgGeneric();
 	#	$genericArg->setMandatory(TRUE);
-	#	$genericArgv->addNamedArg("frontend", $genericArg);
+	#	$genericArgv->addNamedArg("frontend", $userValue);
 	#	$this->expectException(ArgvException::class);
 	#	$argvImport = new Argv(array("example.php", "--frontend="), $genericArgv);
 	#}	
@@ -213,9 +237,9 @@ class ArgvTest extends TestCase {
 	 */
 	function testNamedArgMandatoryZero() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setMandatory(TRUE);
-		$genericArgv->addNamedArg("frontend", $genericArg);
+		$userValue= new UserValue();
+		
+		$genericArgv->addNamedArg("frontend", $userValue);
 		$argvImport = new Argv(array("example.php", "--frontend=0"), $genericArgv);
 		$this->assertEquals("0", $argvImport->getValue("frontend"));
 	}
@@ -231,8 +255,9 @@ class ArgvTest extends TestCase {
 	
 	function testPositionalArgument() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addPositionalArg("input", new ArgGeneric());
-		$genericArgv->addPositionalArg("output", new ArgGeneric());
+		$genericArgv->addPositionalArg("input", new UserValue());
+		$genericArgv->addPositionalArg("output", new UserValue());
+		
 		$argvImport = new Argv(array("example.php", "input.txt", "output.txt"), $genericArgv);
 		$this->assertEquals("input.txt", $argvImport->getPositional(0));
 		$this->assertEquals("output.txt", $argvImport->getPositional(1));
@@ -243,9 +268,9 @@ class ArgvTest extends TestCase {
 	 */
 	function testPositionalArgumentWithMuddledNamed() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addPositionalArg("input", new ArgGeneric());
-		$genericArgv->addPositionalArg("output", new ArgGeneric());
-		$genericArgv->addNamedArg("date", new ArgGeneric());
+		$genericArgv->addPositionalArg("input", new UserValue());
+		$genericArgv->addPositionalArg("output", new UserValue());
+		$genericArgv->addNamedArg("date", new UserValue());
 		$argvImport = new Argv(array("example.php", "input.txt", "--date=2020-01-01", "output.txt"), $genericArgv);
 		$this->assertEquals("input.txt", $argvImport->getPositional(0));
 		$this->assertEquals("output.txt", $argvImport->getPositional(1));
@@ -257,7 +282,7 @@ class ArgvTest extends TestCase {
 	 */
 	function testPositionalArgumentUndefined() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addPositionalArg("input", new ArgGeneric());
+		$genericArgv->addPositionalArg("input", new UserValue());
 		$argvImport = new Argv(array("example.php", "input.txt"), $genericArgv);
 		$this->assertEquals("input.txt", $argvImport->getPositional(0));
 		$this->expectException(OutOfRangeException::class);
@@ -270,7 +295,7 @@ class ArgvTest extends TestCase {
 	 */
 	function testPositionalArgumentUnexpected() {
 		$genericArgv = new ArgvGeneric();
-		$genericArgv->addPositionalArg("input", new ArgGeneric());
+		$genericArgv->addPositionalArg("input", new UserValue());
 		$this->expectException(ArgvException::class);
 		$argvImport = new Argv(array("example.php", "input.txt", "output.txt"), $genericArgv);
 	}
@@ -279,9 +304,10 @@ class ArgvTest extends TestCase {
 	 */
 	function testValidatePass() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setValidate(new ValidateDate(ValidateDate::ISO));
-		$genericArgv->addNamedArg("date", $genericArg);
+		$userValue= new UserValue();
+		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		
+		$genericArgv->addNamedArg("date", $userValue);
 		$argvImport = new Argv(array("example.php", "--date=2020-01-01"), $genericArgv);
 		$this->assertEquals("2020-01-01", $argvImport->getValue("date"));
 	}
@@ -291,10 +317,11 @@ class ArgvTest extends TestCase {
 	 */
 	function testValidateFail() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setValidate(new ValidateDate(ValidateDate::ISO));
-		$genericArgv->addNamedArg("date", $genericArg);
-		$this->expectException(ArgvException::class);
+		$userValue = new UserValue();
+		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		$genericArgv->addNamedArg("date", $userValue);
+		
+		$this->expectException(ValidateException::class);
 		$argvImport = new Argv(array("example.php", "--date=01.01.2020"), $genericArgv);
 	}
 
@@ -305,11 +332,11 @@ class ArgvTest extends TestCase {
 	 */
 	function testValidateDefaultFail() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setValidate(new ValidateDate(ValidateDate::ISO));
-		$genericArg->setDefault("01.01.2020");
-		$genericArgv->addNamedArg("date", $genericArg);
-		$this->expectException(InvalidArgumentException::class);
+		$userValue = new UserValue();
+		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		$this->expectException(ValidateException::class);
+		$userValue->setValue("01.01.2020");
+		
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 	}
 	
@@ -318,10 +345,11 @@ class ArgvTest extends TestCase {
 	 */
 	function testConvert() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setValidate(new ValidateTime());
-		$genericArg->setConvert(new ConvertTime(ConvertTime::HMS, ConvertTime::SECONDS));
-		$genericArgv->addNamedArg("time", $genericArg);
+		$userValue = new UserValue();
+		$userValue->setValidate(new ValidateTime());
+		$userValue->setConvert(new ConvertTime(ConvertTime::HMS, ConvertTime::SECONDS));
+		
+		$genericArgv->addNamedArg("time", $userValue);
 		$argvImport = new Argv(array("example.php", "--time=01:15:00"), $genericArgv);
 		$this->assertEquals("4500", $argvImport->getValue("time"));
 	}
@@ -330,11 +358,12 @@ class ArgvTest extends TestCase {
 	 */
 	function testConvertDefaulted() {
 		$genericArgv = new ArgvGeneric();
-		$genericArg = new ArgGeneric();
-		$genericArg->setValidate(new ValidateTime());
-		$genericArg->setConvert(new ConvertTime(ConvertTime::HMS, ConvertTime::SECONDS));
-		$genericArg->setDefault("02:00:00");
-		$genericArgv->addNamedArg("time", $genericArg);
+		$userValue = new UserValue();
+		$userValue->setValidate(new ValidateTime());
+		$userValue->setConvert(new ConvertTime(ConvertTime::HMS, ConvertTime::SECONDS));
+		$userValue->setValue("02:00:00");
+		
+		$genericArgv->addNamedArg("time", $userValue);
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->assertEquals("7200", $argvImport->getValue("time"));
 	}

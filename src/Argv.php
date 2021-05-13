@@ -19,14 +19,89 @@ class Argv {
 	private $availablePositional = array();
 	private $availableNamed = array();
 	private $availableBoolean = array();
+	const X_ALL = 1;
+	const X_NAMED = 2;
+	const X_BOOL = 3;
+	const X_POS = 4;
 	function __construct(array $argv, ArgvModel $model) {
 		$this->model = $model;
-		$this->argv = array_slice($argv, 1);
-		$this->getAvailable();
-		$this->sanityCheck();
-		$this->validate();
-		$this->convert();
+		$this->argv = $argv;
+		$this->import();
+		#$this->getAvailable();
+		#$this->sanityCheck();
+		#$this->validate();
+		#$this->convert();
 	}
+	
+	private function import() {
+		#$this->availableNamed = $this->importNamed();
+		$this->availableNamed = $this->importNamed();
+		$this->availableBoolean = $this->importBoolean();
+		$this->availablePositional = $this->importPositional();
+		#var_dump($this->availableBoolean);
+		#print_r($this->availableBoolean);
+	}
+	
+	private function importBoolean(): array {
+		$extract = $this->extractArgv($this->argv, self::X_BOOL);
+		$result = array();
+		foreach($this->model->getBoolean() as $value) {
+			if(isset($extract[$value])) {
+				$result[] = $value;
+				continue;
+			}
+			if(!isset($extract[$value])) {
+				continue;
+			}
+			throw new ArgvException("boolean argument must not have a value");
+		}
+		foreach($extract as $key => $value) {
+			if(!in_array($key, $this->model->getBoolean())) {
+				throw new ArgvException("unexpected boolean parameter '".$key."'");
+			}
+		}
+	return $result;
+	}
+	
+	private function importNamed(): array {
+		$extract = $this->extractArgv($this->argv, self::X_NAMED);
+		$result = array();
+		foreach($this->model->getArgNames() as $value) {
+			$uservalue = $this->model->getNamedArg($value);
+			if(isset($extract[$value])) {
+				$uservalue->setValue($extract[$value]);
+			}
+			if($uservalue->getValue()!=="") {
+				$result[$value] = $uservalue->getValue();
+			}
+		}
+		foreach($extract as $key => $value) {
+			if(!in_array($key, $this->model->getArgNames())) {
+				throw new ArgvException("unexpected named parameter '".$key."'");
+			}
+		}
+	return $result;
+	}
+	
+	private function importPositional(): array {
+		$extract = $this->extractArgv($this->argv, self::X_POS);
+		$result = array();
+		for($i=0;$i<$this->model->getPositionalCount();$i++) {
+			$uservalue = $this->model->getPositionalArg($i);
+			if(isset($extract[$i])) {
+				$uservalue->setValue($extract[$i]);
+			}
+			if($uservalue->getValue()!=="") {
+				$result[$i] = $uservalue->getValue();
+			}
+		}
+		if(count($extract)>$this->model->getPositionalCount()) {
+			throw new ArgvException("Unexpected positional argument ".($this->model->getPositionalCount()+1));
+		}
+
+	return $result;
+	}
+	
 	/**
 	 * Parses $argv and returns array
 	 * 
@@ -39,8 +114,11 @@ class Argv {
 	 * @return array
 	 * @throws ArgvException
 	 */
-	static function extractArgv(array $argv): array {
+	static function extractArgv(array $argv, $filter = self::X_ALL): array {
 		$raw = array();
+		$pos = array();
+		$bool = array();
+		$named = array();
 		unset($argv[0]);
 		foreach($argv as $key => $value) {
 			if($value==="--") {
@@ -50,12 +128,26 @@ class Argv {
 				$exp = explode("=", $value, 2);
 				if(count($exp)==2) {
 					$raw[substr($exp[0], 2)] = $exp[1];
+					$named[substr($exp[0], 2)] = $exp[1];
 					continue;
 				}
 				$raw[substr($exp[0], 2)] = true;
+				$bool[substr($exp[0], 2)] = true;
 			continue;
 			}
 			$raw[] = $value;
+			$pos[] = $value;
+		}
+		if($filter==self::X_BOOL) {
+			return $bool;
+		}
+		
+		if($filter==self::X_NAMED) {
+			return $named;
+		}
+		
+		if($filter==self::X_POS) {
+			return $pos;
 		}
 	return $raw;
 	}

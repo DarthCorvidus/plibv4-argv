@@ -16,14 +16,20 @@
 		{
 			"type": "vcs",
 			"url": "https://github.com/DarthCorvidus/plibv4-longeststring"
+		},
+		{
+			"type": "vcs",
+			"url": "https://github.com/DarthCorvidus/plibv4-uservalue"
 		}
+
 
 	],
 	"name": "plibv4/argv",
 	"require": {
 			"plibv4/convert": "dev-main",
 			"plibv4/validate": "dev-main",
-			"plibv4/longeststring": "dev-main"
+			"plibv4/longeststring": "dev-main",
+			"plibv4/uservalue": "dev-main"
 	},
 	"autoload": {
         "classmap": ["src/"]

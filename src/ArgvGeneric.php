@@ -24,7 +24,7 @@ class ArgvGeneric implements ArgvModel {
 	 * @param type $name
 	 * @param ArgModel $arg
 	 */
-	public function addNamedArg($name, ArgModel $arg) {
+	public function addNamedArg($name, UserValue $arg) {
 		$this->namedArgs[$name] = $arg;
 	}
 	
@@ -59,7 +59,7 @@ class ArgvGeneric implements ArgvModel {
 	 * @param string $name Name will be used in error messages.
 	 * @param ArgModel $arg
 	 */
-	public function addPositionalArg(string $name, ArgModel $arg) {
+	public function addPositionalArg(string $name, UserValue $arg) {
 		$this->positionalArgs[] = $arg;
 		$this->positionalNames[] = $name;
 	}
@@ -72,14 +72,14 @@ class ArgvGeneric implements ArgvModel {
 		return $this->booleanArgs;
 	}
 
-	public function getNamedArg(string $name): \ArgModel {
+	public function getNamedArg(string $name): UserValue {
 		if(!isset($this->namedArgs[$name])) {
 			throw new OutOfRangeException("named argument '".$name."' is not defined.");
 		}
 		return $this->namedArgs[$name];
 	}
 
-	public function getPositionalArg(int $i): \ArgModel {
+	public function getPositionalArg(int $i): UserValue {
 		if(!isset($this->positionalArgs[$i])) {
 			throw new OutOfRangeException("positional argument '".$i."' is not defined.");
 		}

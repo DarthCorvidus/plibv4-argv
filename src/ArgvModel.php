@@ -22,7 +22,7 @@ interface ArgvModel {
 	 * @param string $name
 	 * @return ArgModel Description
 	 */
-	public function getNamedArg(string $name): ArgModel;
+	public function getNamedArg(string $name): UserValue;
 
 	/**
 	 * Get number of positional accounts
@@ -33,7 +33,7 @@ interface ArgvModel {
 	 * Get ArgModel for positional account (0-indexed)
 	 * @param int $i
 	 */
-	public function getPositionalArg(int $i): ArgModel;
+	public function getPositionalArg(int $i): UserValue;
 	
 	/**
 	 * Get positional name; the name will be used in error messages if the user
