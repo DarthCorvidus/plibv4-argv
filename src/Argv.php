@@ -91,12 +91,19 @@ class Argv {
 		$result = array();
 		for($i=0;$i<$this->model->getPositionalCount();$i++) {
 			$uservalue = $this->model->getPositionalArg($i);
-			if(isset($extract[$i])) {
-				$uservalue->setValue($extract[$i]);
+			try {
+				if(isset($extract[$i])) {
+					$uservalue->setValue($extract[$i]);
+				}
+				if($uservalue->getValue()!=="") {
+					$result[$i] = $uservalue->getValue();
+				}
+			} catch (MandatoryException $e) {
+				throw new ArgvException($e->getMessage());
+			} catch (ValidateException $e) {
+				throw new ArgvException($e->getMessage());
 			}
-			if($uservalue->getValue()!=="") {
-				$result[$i] = $uservalue->getValue();
-			}
+
 		}
 		if(count($extract)>$this->model->getPositionalCount()) {
 			throw new ArgvException("Unexpected positional argument ".($this->model->getPositionalCount()+1));
