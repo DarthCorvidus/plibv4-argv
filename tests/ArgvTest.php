@@ -188,7 +188,7 @@ class ArgvTest extends TestCase {
 		$userValue->setValue("graceful");
 		
 		$genericArgv->addNamedArg("shutdown", $userValue);
-		$this->expectException(MandatoryException::class);
+		$this->expectException(ArgvException::class);
 		$argvImport = new Argv(array("example.php", "--shutdown="), $genericArgv);
 		$this->assertEquals("", $argvImport->getValue("shutdown"));
 	}
@@ -215,7 +215,7 @@ class ArgvTest extends TestCase {
 		$genericArgv = new ArgvGeneric();
 		$userValue= new UserValue();
 		$genericArgv->addNamedArg("frontend", $userValue);
-		$this->expectException(MandatoryException::class);
+		$this->expectException(ArgvException::class);
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 	}
 
@@ -321,7 +321,7 @@ class ArgvTest extends TestCase {
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
 		$genericArgv->addNamedArg("date", $userValue);
 		
-		$this->expectException(ValidateException::class);
+		$this->expectException(ArgvException::class);
 		$argvImport = new Argv(array("example.php", "--date=01.01.2020"), $genericArgv);
 	}
 

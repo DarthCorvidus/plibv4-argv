@@ -65,11 +65,17 @@ class Argv {
 		$result = array();
 		foreach($this->model->getArgNames() as $value) {
 			$uservalue = $this->model->getNamedArg($value);
-			if(isset($extract[$value])) {
-				$uservalue->setValue($extract[$value]);
-			}
-			if($uservalue->getValue()!=="") {
-				$result[$value] = $uservalue->getValue();
+			try {
+				if(isset($extract[$value])) {
+					$uservalue->setValue($extract[$value]);
+				}
+				if($uservalue->getValue()!=="") {
+					$result[$value] = $uservalue->getValue();
+				}
+			} catch (MandatoryException $e) {
+				throw new ArgvException($e->getMessage());
+			} catch (ValidateException $e) {
+				throw new ArgvException($e->getMessage());
 			}
 		}
 		foreach($extract as $key => $value) {
