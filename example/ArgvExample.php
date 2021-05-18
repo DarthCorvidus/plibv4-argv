@@ -16,19 +16,16 @@ class ArgvExample implements ArgvModel {
 	private $namedArg = array();
 	private $boolean = array();
 	function __construct() {
-		$this->positional[0] = new ArgGeneric();
-		$this->positional[0]->setMandatory();
+		$this->positional[0] = UserValue::asMandatory();
 		$this->positionalNames[] = "input";
-		$this->positional[1] = new ArgGeneric();
-		$this->positional[0]->setMandatory();
+		$this->positional[1] = UserValue::asMandatory();
 		$this->positionalNames[] = "output";
 		$this->boolean = array("locked", "test");
-		$this->namedArg["time"] = new ArgGeneric();
+		$this->namedArg["time"] = UserValue::asOptional();
 		$this->namedArg["time"]->setValidate(new ValidateTime());
 		$this->namedArg["time"]->setConvert(new ConvertTime(ConvertTime::HMS, ConvertTime::SECONDS));
-		$this->namedArg["time"]->setDefault("00:00:00");
-		$this->namedArg["user"] = new ArgGeneric();
-		$this->namedArg["user"]->setMandatory();
+		$this->namedArg["time"]->setValue("00:00:00");
+		$this->namedArg["user"] = UserValue::asMandatory();
 	}
 
 	public function getArgNames(): array {
@@ -39,11 +36,11 @@ class ArgvExample implements ArgvModel {
 		return $this->boolean;
 	}
 
-	public function getNamedArg(string $name): \ArgModel {
+	public function getNamedArg(string $name): UserValue {
 		return $this->namedArg[$name];
 	}
 
-	public function getPositionalArg(int $i): \ArgModel {
+	public function getPositionalArg(int $i): UserValue {
 		return $this->positional[$i];
 	}
 

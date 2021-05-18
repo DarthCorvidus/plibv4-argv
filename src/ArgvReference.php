@@ -14,10 +14,11 @@ class ArgvReference {
 		$this->argvModel = $model;
 	}
 	
-	function getReference() {
-		echo $this->getPositionalReference();
-		echo $this->getNamedReference();
-		echo $this->getBooleanReference();
+	function getReference(): string {
+		$ref[] = $this->getPositionalReference();
+		$ref[] = $this->getNamedReference();
+		$ref[] = $this->getBooleanReference();
+	return implode(PHP_EOL, $ref);
 	}
 	
 	private function getPositionalReference(): string {

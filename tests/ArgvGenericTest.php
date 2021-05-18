@@ -29,57 +29,57 @@ class ArgvGenericTest extends TestCase {
 
 	function testGetArgNames() {
 		$generic = new ArgvGeneric();
-		$generic->addNamedArg("input", new UserValue());
-		$generic->addNamedArg("output", new UserValue());
+		$generic->addNamedArg("input", UserValue::asMandatory());
+		$generic->addNamedArg("output", UserValue::asMandatory());
 		$this->assertEquals($generic->getArgNames(), array("input", "output"));
 	}
 	
 	function testGetNamedArg() {
 		$generic = new ArgvGeneric();
-		$generic->addNamedArg("input", new UserValue());
+		$generic->addNamedArg("input", UserValue::asMandatory());
 		$this->assertInstanceOf(UserValue::class, $generic->getNamedArg("input"));
 	}
 
 	function testGetNamedArgUndefined() {
 		$generic = new ArgvGeneric();
-		$generic->addNamedArg("input", new UserValue());
+		$generic->addNamedArg("input", UserValue::asMandatory());
 		$this->expectException(OutOfRangeException::class);
 		$generic->getNamedArg("output");
 	}
 	
 	function testGetPositionalArgCount() {
 		$generic = new ArgvGeneric();
-		$generic->addPositionalArg("input", new UserValue());
-		$generic->addPositionalArg("output", new UserValue());
+		$generic->addPositionalArg("input", UserValue::asMandatory());
+		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertEquals(2, $generic->getPositionalCount());
 	}
 	
 	function testGetPositionalArg() {
 		$generic = new ArgvGeneric();
-		$generic->addPositionalArg("input", new UserValue());
-		$generic->addPositionalArg("output", new UserValue());
+		$generic->addPositionalArg("input", UserValue::asMandatory());
+		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertInstanceOf(UserValue::class, $generic->getPositionalArg(0));
 	}
 	
 	function testGetPositionalName() {
 		$generic = new ArgvGeneric();
-		$generic->addPositionalArg("input", new UserValue());
-		$generic->addPositionalArg("output", new UserValue());
+		$generic->addPositionalArg("input", UserValue::asMandatory());
+		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertEquals("input", $generic->getPositionalName(0));
 	}
 	
 	function testGetPositionalArgMissing() {
 		$generic = new ArgvGeneric();
-		$generic->addPositionalArg("input", new UserValue());
-		$generic->addPositionalArg("output", new UserValue());
+		$generic->addPositionalArg("input", UserValue::asMandatory());
+		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->expectException(OutOfRangeException::class);
 		$generic->getPositionalArg(3);
 	}
 
 	function testGetPositionalNameMissing() {
 		$generic = new ArgvGeneric();
-		$generic->addPositionalArg("input", new UserValue());
-		$generic->addPositionalArg("output", new UserValue());
+		$generic->addPositionalArg("input", UserValue::asMandatory());
+		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->expectException(OutOfRangeException::class);
 		$generic->getPositionalName(3);
 	}
