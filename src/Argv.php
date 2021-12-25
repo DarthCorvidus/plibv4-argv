@@ -226,4 +226,32 @@ class Argv {
 		}
 		return in_array($key, $this->availableBoolean);
 	}
+	
+	/**
+	 * Get all named values as array.
+	 * @return array
+	 */
+	function getNamedValues(): array {
+		return $this->availableNamed;
+	}
+	
+	/**
+	 * Get all positional values as array (numerical index)
+	 * @return array
+	 */
+	function getPositionalValues(): array {
+		return $this->availablePositional;
+	}
+	
+	/**
+	 * Get all positional values as array (associative index)
+	 * @return array
+	 */
+	function getNamedPositionalValues(): array {
+		$named = array();
+		foreach($this->availablePositional as $key => $value) {
+			$named[$this->model->getPositionalName($key)] = $value;
+		}
+	return $named;
+	}
 }

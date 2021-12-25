@@ -366,4 +366,52 @@ class ArgvTest extends TestCase {
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 		$this->assertEquals("7200", $argvImport->getValue("time"));
 	}
+
+	function testGetNamedValues() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected["date"] = "2021-01-01";
+		$expected["conf"] = "/etc/example.conf";
+		$genericArgv = new ArgvGeneric();
+		$genericArgv->addNamedArg("date", UserValue::asMandatory());
+		$genericArgv->addNamedArg("conf", UserValue::asMandatory());
+		$genericArgv->addNamedArg("novalue", UserValue::asOptional());
+		$genericArgv->addBooleanArg("funrun");
+		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
+		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
+		$argvImport = new Argv($argv, $genericArgv);
+		$this->assertEquals($expected, $argvImport->getNamedValues());
+	}
+
+	function testGetPositionalValues() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected[0] = "positional01";
+		$expected[1] = "positional02";
+		$genericArgv = new ArgvGeneric();
+		$genericArgv->addNamedArg("date", UserValue::asMandatory());
+		$genericArgv->addNamedArg("conf", UserValue::asMandatory());
+		$genericArgv->addNamedArg("novalue", UserValue::asOptional());
+		$genericArgv->addBooleanArg("funrun");
+		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
+		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
+		$argvImport = new Argv($argv, $genericArgv);
+		$this->assertEquals($expected, $argvImport->getPositionalValues());
+	}
+
+	function testGetNamedPositionalValues() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected["input"] = "positional01";
+		$expected["output"] = "positional02";
+		$genericArgv = new ArgvGeneric();
+		$genericArgv->addNamedArg("date", UserValue::asMandatory());
+		$genericArgv->addNamedArg("conf", UserValue::asMandatory());
+		$genericArgv->addNamedArg("novalue", UserValue::asOptional());
+		$genericArgv->addBooleanArg("funrun");
+		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
+		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
+		$argvImport = new Argv($argv, $genericArgv);
+		$this->assertEquals($expected, $argvImport->getNamedPositionalValues());
+	}
+	
+	
+
 }
