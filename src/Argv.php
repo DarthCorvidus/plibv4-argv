@@ -179,7 +179,7 @@ class Argv {
 	 * Checks whether a certain parameter is available or not. A parameter is
 	 * available if it was used by the calling user or if it's ArgModel has a
 	 * default value.
-	 * @param type $key
+	 * @param string $key
 	 * @return bool
 	 */
 	function hasValue($key):bool {
@@ -190,7 +190,7 @@ class Argv {
 	 * not available will throw an exception, so hasValue should be called
 	 * beforehand if a value is not mandatory and has no default value.
 	 * 
-	 * @param type $key
+	 * @param string $key
 	 * @return string
 	 * @throws Exception
 	 */
@@ -216,7 +216,7 @@ class Argv {
 	 * getBoolean will evaluate to true if a parameter was set (like --force),
 	 * and to false, if it was not set. It will throw an Exception if it was
 	 * not defined in an instance of ArgvModel.
-	 * @param type $key
+	 * @param string $key
 	 * @return bool
 	 * @throws Exception
 	 */
