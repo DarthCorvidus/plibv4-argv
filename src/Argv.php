@@ -15,14 +15,23 @@
  */
 class Argv {
 	private ArgvModel $model;
+	/** @var list<string> */
 	private array $argv;
+	/** @var list<string> */
 	private array $availablePositional = array();
+	/** @var array<string, string> */
 	private array $availableNamed = array();
+	/** @var list<string> */
 	private array $availableBoolean = array();
 	const X_ALL = 1;
 	const X_NAMED = 2;
 	const X_BOOL = 3;
 	const X_POS = 4;
+	/**
+	 * 
+	 * @param list<string> $argv
+	 * @param ArgvModel $model
+	 */
 	function __construct(array $argv, ArgvModel $model) {
 		$this->model = $model;
 		$this->argv = $argv;
@@ -32,7 +41,17 @@ class Argv {
 		#$this->validate();
 		#$this->convert();
 	}
-	
+	/**
+	 * Argv::extractArgv is problematic here, as I took advantage of the fact
+	 * that PHP is PHP and not java, which means that extractArgv provides a
+	 * nice fat array where types & keys are mixed. The reason was that I wanted
+	 * to have the parsing code in one place.
+	 * This could be redesigned, but as long as the tests check out, this is not
+	 * highest on my list of priorities.
+	 * @psalm-suppress MixedPropertyTypeCoercion
+	 * @psalm-suppress PropertyTypeCoercion
+	 * @return void
+	 */
 	private function import(): void {
 		$this->availableNamed = $this->importNamed();
 		$this->availableBoolean = $this->importBoolean();
@@ -40,7 +59,7 @@ class Argv {
 	}
 	
 	private function importBoolean(): array {
-		$extract = $this->extractArgv($this->argv, self::X_BOOL);
+		$extract = self::extractArgv($this->argv, self::X_BOOL);
 		$result = array();
 		foreach($this->model->getBoolean() as $value) {
 			if(isset($extract[$value])) {
@@ -66,13 +85,13 @@ class Argv {
 	}
 	
 	private function importNamed(): array {
-		$extract = $this->extractArgv($this->argv, self::X_NAMED);
+		$extract = self::extractArgv($this->argv, self::X_NAMED);
 		$result = array();
 		foreach($this->model->getArgNames() as $value) {
 			$uservalue = $this->model->getNamedArg($value);
 			try {
 				if(isset($extract[$value])) {
-					$uservalue->setValue($extract[$value]);
+					$uservalue->setValue((string)$extract[$value]);
 				}
 				if($uservalue->getValue()!=="") {
 					$result[$value] = $uservalue->getValue();
@@ -92,13 +111,13 @@ class Argv {
 	}
 	
 	private function importPositional(): array {
-		$extract = $this->extractArgv($this->argv, self::X_POS);
+		$extract = self::extractArgv($this->argv, self::X_POS);
 		$result = array();
 		for($i=0;$i<$this->model->getPositionalCount();$i++) {
 			$uservalue = $this->model->getPositionalArg($i);
 			try {
 				if(isset($extract[$i])) {
-					$uservalue->setValue($extract[$i]);
+					$uservalue->setValue((string)$extract[$i]);
 				}
 				if($uservalue->getValue()!=="") {
 					$result[$i] = $uservalue->getValue();
@@ -125,8 +144,8 @@ class Argv {
 	 * named arguments a associative index.
 	 * Note that this does no sanity checks whatsoever beside malformed
 	 * arguments.
-	 * @param array $argv
-	 * @return array
+	 * @param list<string> $argv
+	 * @return array<mixed, mixed>
 	 * @throws ArgvException
 	 */
 	static function extractArgv(array $argv, int $filter = self::X_ALL): array {
@@ -150,7 +169,13 @@ class Argv {
 				$bool[substr($exp[0], 2)] = true;
 			continue;
 			}
+			/**
+			 * @psalm-suppress MixedAssignment
+			 */
 			$raw[] = $value;
+			/**
+			 * @psalm-suppress MixedAssignment
+			 */
 			$pos[] = $value;
 		}
 		if($filter==self::X_BOOL) {
@@ -172,7 +197,7 @@ class Argv {
 	 * 
 	 * This function checks whether boolean argument --help is present within
 	 * a call. This allows you to exit your script early with an online help.
-	 * @param array $argv
+	 * @param list<string> $argv
 	 * @return bool
 	 */
 	static function hasHelp(array $argv): bool {

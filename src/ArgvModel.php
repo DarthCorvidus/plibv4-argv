@@ -39,6 +39,7 @@ interface ArgvModel {
 	 * Get positional name; the name will be used in error messages if the user
 	 * fails to deliver a positional argument.
 	 * @param int $i
+	 * @return string Name of positional argument
 	 */
 	public function getPositionalName(int $i): string;
 	

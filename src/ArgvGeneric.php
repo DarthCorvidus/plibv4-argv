@@ -14,9 +14,13 @@
  * ArgvGeneric lets you define parameters outside of your own implementation.
  */
 class ArgvGeneric implements ArgvModel {
+	/** @var array<string, UserValue> */
 	private array $namedArgs = array();
+	/** @var list<string> */
 	private array $booleanArgs = array();
+	/** @var list<UserValue> */
 	private array $positionalArgs = array();
+	/** @var list<string> */
 	private array $positionalNames = array();
 	
 	/**
@@ -33,7 +37,7 @@ class ArgvGeneric implements ArgvModel {
 	 * false if not, like example.php --confirm.
 	 *
 	 * Note that setBooleanArgs will replace any preexisting boolean arguments.
-	 * @param array $booleanArgs
+	 * @param list<string> $booleanArgs
 	 */
 	public function setBooleanArgs(array $booleanArgs): void {
 		$this->booleanArgs = $booleanArgs;
