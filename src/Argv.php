@@ -14,11 +14,11 @@
  * used.
  */
 class Argv {
-	private $model;
-	private $argv;
-	private $availablePositional = array();
-	private $availableNamed = array();
-	private $availableBoolean = array();
+	private ArgvModel $model;
+	private array $argv;
+	private array $availablePositional = array();
+	private array $availableNamed = array();
+	private array $availableBoolean = array();
 	const X_ALL = 1;
 	const X_NAMED = 2;
 	const X_BOOL = 3;
@@ -33,7 +33,7 @@ class Argv {
 		#$this->convert();
 	}
 	
-	private function import() {
+	private function import(): void {
 		$this->availableNamed = $this->importNamed();
 		$this->availableBoolean = $this->importBoolean();
 		$this->availablePositional = $this->importPositional();
@@ -47,12 +47,17 @@ class Argv {
 				$result[] = $value;
 				continue;
 			}
+			/**
+			 * Psalm is not quite correct here; I suppose that it expects 'else',
+			 * but I dislike else.
+			 * @psalm-suppress RedundantCondition
+			 */
 			if(!isset($extract[$value])) {
 				continue;
 			}
 			throw new ArgvException("boolean argument must not have a value");
 		}
-		foreach($extract as $key => $value) {
+		foreach(array_keys($extract) as $key) {
 			if(!in_array($key, $this->model->getBoolean())) {
 				throw new ArgvException("unexpected boolean parameter '".$key."'");
 			}
@@ -78,7 +83,7 @@ class Argv {
 				throw new ArgvException("--".$value.": ".$e->getMessage());
 			}
 		}
-		foreach($extract as $key => $value) {
+		foreach(array_keys($extract) as $key) {
 			if(!in_array($key, $this->model->getArgNames())) {
 				throw new ArgvException("unexpected named parameter '".$key."'");
 			}
@@ -124,13 +129,13 @@ class Argv {
 	 * @return array
 	 * @throws ArgvException
 	 */
-	static function extractArgv(array $argv, $filter = self::X_ALL): array {
+	static function extractArgv(array $argv, int $filter = self::X_ALL): array {
 		$raw = array();
 		$pos = array();
 		$bool = array();
 		$named = array();
 		unset($argv[0]);
-		foreach($argv as $key => $value) {
+		foreach($argv as $value) {
 			if($value==="--") {
 				throw new ArgvException("Named argument with no name found (--)");
 			}
@@ -182,7 +187,7 @@ class Argv {
 	 * @param string $key
 	 * @return bool
 	 */
-	function hasValue($key):bool {
+	function hasValue($key): bool {
 		return isset($this->availableNamed[$key]);
 	}
 	/**
@@ -201,11 +206,11 @@ class Argv {
 	return $this->availableNamed[$key];
 	}
 	
-	function hasPositional(int $pos) {
+	function hasPositional(int $pos): bool {
 		return isset($this->availablePositional[$pos]);
 	}
 	
-	function getPositional(int $pos) {
+	function getPositional(int $pos): string {
 		if(!$this->hasPositional($pos)) {
 			throw new OutOfRangeException("positional argument ".$pos." doesn't exist");
 		}

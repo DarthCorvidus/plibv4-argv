@@ -13,14 +13,14 @@ interface ArgvModel {
 	/**
 	 * Get the names of named arguments as an array, eg. [input, output] for
 	 * what should be 'example.php --input=<value> --output=<value>'.
-	 * @return array
+	 * @return string[]
 	 */
 	public function getArgNames(): array;
 	
 	/**
 	 * Get model for named argument.
 	 * @param string $name
-	 * @return ArgModel Description
+	 * @return UserValue Description
 	 */
 	public function getNamedArg(string $name): UserValue;
 
@@ -46,6 +46,7 @@ interface ArgvModel {
 	 * return an array of pure boolean parameters without a value, which will
 	 * evaluate to true if set; eg. the array("run", "log") stands for the
 	 * boolean parameters 'example.php --run --log'.
+	 * @return string[] Description
 	 */
 	function getBoolean(): array;
 }

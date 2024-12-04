@@ -15,6 +15,7 @@ class ArgvReference {
 	}
 	
 	function getReference(): string {
+		$ref  = [];
 		$ref[] = $this->getPositionalReference();
 		$ref[] = $this->getNamedReference();
 		$ref[] = $this->getBooleanReference();
@@ -36,7 +37,7 @@ class ArgvReference {
 	return $return;
 	}
 	
-	private function getBooleanReference() {
+	private function getBooleanReference(): string {
 		if(empty($this->argvModel->getBoolean())) {
 			return "";
 		}

@@ -14,17 +14,17 @@
  * ArgvGeneric lets you define parameters outside of your own implementation.
  */
 class ArgvGeneric implements ArgvModel {
-	private $namedArgs = array();
-	private $booleanArgs = array();
-	private $positionalArgs = array();
-	private $positionalNames = array();
+	private array $namedArgs = array();
+	private array $booleanArgs = array();
+	private array $positionalArgs = array();
+	private array $positionalNames = array();
 	
 	/**
 	 * Add a named argument, such as example.php --file=<filename>
-	 * @param type $name
-	 * @param ArgModel $arg
+	 * @param string $name
+	 * @param UserValue $arg
 	 */
-	public function addNamedArg($name, UserValue $arg) {
+	public function addNamedArg(string $name, UserValue $arg): void {
 		$this->namedArgs[$name] = $arg;
 	}
 	
@@ -35,7 +35,7 @@ class ArgvGeneric implements ArgvModel {
 	 * Note that setBooleanArgs will replace any preexisting boolean arguments.
 	 * @param array $booleanArgs
 	 */
-	public function setBooleanArgs(array $booleanArgs) {
+	public function setBooleanArgs(array $booleanArgs): void {
 		$this->booleanArgs = $booleanArgs;
 	}
 	
@@ -43,7 +43,7 @@ class ArgvGeneric implements ArgvModel {
 	 * Add a single boolean arguments, appending to existing arguments.
 	 * @param string $booleanArg
 	 */
-	public function addBooleanArg(string $booleanArg) {
+	public function addBooleanArg(string $booleanArg): void {
 		$this->booleanArgs[] = $booleanArg;
 	}
 	
@@ -57,9 +57,9 @@ class ArgvGeneric implements ArgvModel {
 	 * This behaviour may change.
 	 * 
 	 * @param string $name Name will be used in error messages.
-	 * @param ArgModel $arg
+	 * @param UserValue $arg
 	 */
-	public function addPositionalArg(string $name, UserValue $arg) {
+	public function addPositionalArg(string $name, UserValue $arg): void {
 		$this->positionalArgs[] = $arg;
 		$this->positionalNames[] = $name;
 	}
