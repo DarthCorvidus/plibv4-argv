@@ -23,10 +23,7 @@ class Argv {
 	private array $availableNamed = array();
 	/** @var list<string> */
 	private array $availableBoolean = array();
-	const X_ALL = 1;
-	const X_NAMED = 2;
-	const X_BOOL = 3;
-	const X_POS = 4;
+	private ArgvParser $parser;
 	/**
 	 * 
 	 * @param list<string> $argv
@@ -35,34 +32,31 @@ class Argv {
 	function __construct(array $argv, ArgvModel $model) {
 		$this->model = $model;
 		$this->argv = $argv;
+		$this->parser = new ArgvParser($argv);
 		$this->import();
 		#$this->getAvailable();
 		#$this->sanityCheck();
 		#$this->validate();
 		#$this->convert();
 	}
-	/**
-	 * Argv::extractArgv is problematic here, as I took advantage of the fact
-	 * that PHP is PHP and not java, which means that extractArgv provides a
-	 * nice fat array where types & keys are mixed. The reason was that I wanted
-	 * to have the parsing code in one place.
-	 * This could be redesigned, but as long as the tests check out, this is not
-	 * highest on my list of priorities.
-	 * @psalm-suppress MixedPropertyTypeCoercion
-	 * @psalm-suppress PropertyTypeCoercion
-	 * @return void
-	 */
+
 	private function import(): void {
 		$this->availableNamed = $this->importNamed();
 		$this->availableBoolean = $this->importBoolean();
 		$this->availablePositional = $this->importPositional();
 	}
 	
+	/**
+	 * 
+	 * @return list<string>
+	 * @throws ArgvException
+	 */
 	private function importBoolean(): array {
-		$extract = self::extractArgv($this->argv, self::X_BOOL);
+		$extract = $this->parser->getBoolean();
 		$result = array();
 		foreach($this->model->getBoolean() as $value) {
-			if(isset($extract[$value])) {
+			#if(isset($extract[$value])) {
+			if(in_array($value, $extract)) {
 				$result[] = $value;
 				continue;
 			}
@@ -71,30 +65,36 @@ class Argv {
 			 * but I dislike else.
 			 * @psalm-suppress RedundantCondition
 			 */
-			if(!isset($extract[$value])) {
+			if(!in_array($value, $extract)) {
 				continue;
 			}
 			throw new ArgvException("boolean argument must not have a value");
 		}
-		foreach(array_keys($extract) as $key) {
-			if(!in_array($key, $this->model->getBoolean())) {
-				throw new ArgvException("unexpected boolean parameter '".$key."'");
+		foreach($extract as $value) {
+			if(!in_array($value, $this->model->getBoolean())) {
+				throw new ArgvException("unexpected boolean parameter '".$value."'");
 			}
 		}
 	return $result;
 	}
 	
+	/**
+	 * 
+	 * @return array<string, string>
+	 * @throws ArgvException
+	 */
 	private function importNamed(): array {
-		$extract = self::extractArgv($this->argv, self::X_NAMED);
+		$extract = $this->parser->getNamed();
 		$result = array();
 		foreach($this->model->getArgNames() as $value) {
 			$uservalue = $this->model->getNamedArg($value);
 			try {
 				if(isset($extract[$value])) {
-					$uservalue->setValue((string)$extract[$value]);
+					$uservalue->setValue($extract[$value]);
 				}
 				if($uservalue->getValue()!=="") {
-					$result[$value] = $uservalue->getValue();
+					$normalized = $uservalue->getValue();
+					$result[$value] = $normalized;
 				}
 			} catch (MandatoryException $e) {
 				throw new ArgvException("--".$value.": ".$e->getMessage());
@@ -110,17 +110,22 @@ class Argv {
 	return $result;
 	}
 	
+	/**
+	 * 
+	 * @return list<string>
+	 * @throws ArgvException
+	 */
 	private function importPositional(): array {
-		$extract = self::extractArgv($this->argv, self::X_POS);
+		$extract = $this->parser->getPositional();
 		$result = array();
 		for($i=0;$i<$this->model->getPositionalCount();$i++) {
 			$uservalue = $this->model->getPositionalArg($i);
 			try {
 				if(isset($extract[$i])) {
-					$uservalue->setValue((string)$extract[$i]);
+					$uservalue->setValue($extract[$i]);
 				}
 				if($uservalue->getValue()!=="") {
-					$result[$i] = $uservalue->getValue();
+					$result[] = $uservalue->getValue();
 				}
 			} catch (MandatoryException $e) {
 				throw new ArgvException($e->getMessage());
@@ -137,13 +142,14 @@ class Argv {
 	}
 	
 	/**
-	 * Parses $argv and returns array
+	 * Parses $argv and returns array - deprecated, use ArgvParser
 	 * 
 	 * Argv::extractArgv extracts array from $argv, keeping the order of
 	 * arguments. Positional arguments will have a numeric index, boolean and
 	 * named arguments a associative index.
 	 * Note that this does no sanity checks whatsoever beside malformed
 	 * arguments.
+	 * @deprecated
 	 * @param list<string> $argv
 	 * @return array<mixed, mixed>
 	 * @throws ArgvException
@@ -191,7 +197,7 @@ class Argv {
 		}
 	return $raw;
 	}
-	
+
 	/**
 	 * Check for --help
 	 * 
@@ -201,8 +207,8 @@ class Argv {
 	 * @return bool
 	 */
 	static function hasHelp(array $argv): bool {
-		$extract = self::extractArgv($argv);
-	return isset($extract["help"]) && $extract["help"]===TRUE;
+		$parser = new ArgvParser($argv);
+	return $parser->hasHelp();
 	}
 	
 	/**
