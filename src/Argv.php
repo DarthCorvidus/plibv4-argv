@@ -140,63 +140,6 @@ class Argv {
 
 	return $result;
 	}
-	
-	/**
-	 * Parses $argv and returns array - deprecated, use ArgvParser
-	 * 
-	 * Argv::extractArgv extracts array from $argv, keeping the order of
-	 * arguments. Positional arguments will have a numeric index, boolean and
-	 * named arguments a associative index.
-	 * Note that this does no sanity checks whatsoever beside malformed
-	 * arguments.
-	 * @deprecated
-	 * @param list<string> $argv
-	 * @return array<mixed, mixed>
-	 * @throws ArgvException
-	 */
-	static function extractArgv(array $argv, int $filter = self::X_ALL): array {
-		$raw = array();
-		$pos = array();
-		$bool = array();
-		$named = array();
-		unset($argv[0]);
-		foreach($argv as $value) {
-			if($value==="--") {
-				throw new ArgvException("Named argument with no name found (--)");
-			}
-			if(substr($value, 0, 2)=="--") {
-				$exp = explode("=", $value, 2);
-				if(count($exp)==2) {
-					$raw[substr($exp[0], 2)] = $exp[1];
-					$named[substr($exp[0], 2)] = $exp[1];
-					continue;
-				}
-				$raw[substr($exp[0], 2)] = true;
-				$bool[substr($exp[0], 2)] = true;
-			continue;
-			}
-			/**
-			 * @psalm-suppress MixedAssignment
-			 */
-			$raw[] = $value;
-			/**
-			 * @psalm-suppress MixedAssignment
-			 */
-			$pos[] = $value;
-		}
-		if($filter==self::X_BOOL) {
-			return $bool;
-		}
-		
-		if($filter==self::X_NAMED) {
-			return $named;
-		}
-		
-		if($filter==self::X_POS) {
-			return $pos;
-		}
-	return $raw;
-	}
 
 	/**
 	 * Check for --help
