@@ -14,7 +14,7 @@ class ArgvParser {
 	 */
 	function __construct(array $argv) {
 		$this->argv = $argv;
-		self::extractArgv();
+		$this->extractArgv();
 	}
 	/**
 	 * Shortcut to check if flag --help was used.
