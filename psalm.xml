@@ -18,6 +18,18 @@
 				<file name="src/ArgvReference.php" />
 			</errorLevel>
 		</UnusedClass>
+		<ClassMustBeFinal>
+			<errorLevel type="suppress">
+				<!-- actually, I extend ArgvGeneric & Argv very often. It is the
+				very purpose of ArgvGenerig to be extended, in order not to
+				write boilerplate, and I often extend Argv to have more obvious
+				names like getConfigPath instead of getValue("config-path").
+				-->
+				<directory name="src" />
+			</errorLevel>
+		</ClassMustBeFinal>
+
+		
 	</issueHandlers>
     <projectFiles>
         <directory name="src" />

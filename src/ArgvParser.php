@@ -1,5 +1,5 @@
 <?php
-class ArgvParser {
+final class ArgvParser {
 	/** var list<string> */
 	private array $argv = [];
 	/** var list<string> */

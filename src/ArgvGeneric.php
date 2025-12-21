@@ -68,14 +68,17 @@ class ArgvGeneric implements ArgvModel {
 		$this->positionalNames[] = $name;
 	}
 	
+	#[\Override]
 	public function getArgNames(): array {
 		return array_keys($this->namedArgs);
 	}
 
+	#[\Override]
 	public function getBoolean(): array {
 		return $this->booleanArgs;
 	}
 
+	#[\Override]
 	public function getNamedArg(string $name): UserValue {
 		if(!isset($this->namedArgs[$name])) {
 			throw new OutOfRangeException("named argument '".$name."' is not defined.");
@@ -83,6 +86,7 @@ class ArgvGeneric implements ArgvModel {
 		return $this->namedArgs[$name];
 	}
 
+	#[\Override]
 	public function getPositionalArg(int $i): UserValue {
 		if(!isset($this->positionalArgs[$i])) {
 			throw new OutOfRangeException("positional argument '".$i."' is not defined.");
@@ -90,10 +94,12 @@ class ArgvGeneric implements ArgvModel {
 	return $this->positionalArgs[$i];
 	}
 
+	#[\Override]
 	public function getPositionalCount(): int {
 		return count($this->positionalArgs);
 	}
 
+	#[\Override]
 	public function getPositionalName(int $i): string {
 		if(!isset($this->positionalNames[$i])) {
 			throw new OutOfRangeException("positional argument name '".$i."' is not defined.");
