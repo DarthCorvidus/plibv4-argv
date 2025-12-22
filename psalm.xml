@@ -21,7 +21,7 @@
 		<ClassMustBeFinal>
 			<errorLevel type="suppress">
 				<!-- actually, I extend ArgvGeneric & Argv very often. It is the
-				very purpose of ArgvGenerig to be extended, in order not to
+				very purpose of ArgvGeneric to be extended, in order not to
 				write boilerplate, and I often extend Argv to have more obvious
 				names like getConfigPath instead of getValue("config-path").
 				-->
