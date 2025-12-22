@@ -83,6 +83,14 @@ class ArgvTest extends TestCase {
 		$argv = new Argv(array("example.php", "--first"), $generic);
 	}
 
+	function testArgBooleanWithValue() {
+		$generic = new ArgvGeneric();
+		$generic->addBooleanArg("first");
+		$this->expectException(ArgvException::class);
+		$this->expectExceptionMessage("boolean parameter 'first' must not have a value");
+		$argv = new Argv(array("example.php", "--first=someValue"), $generic);
+	}
+
 	/**
 	 * Test to define a named argument and import it's value from $argv.
 	 */
@@ -248,12 +256,22 @@ class ArgvTest extends TestCase {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$this->expectException(ArgvException::class);
-		$argvImport = new Argv(array("example.php", "input.txt", "output.txt"), $genericArgv);
+		new Argv(array("example.php", "input.txt", "output.txt"), $genericArgv);
 	}
+
+	function testPositionalArgumentMissing() {
+		$genericArgv = new ArgvGeneric();
+		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
+		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
+		$this->expectException(ArgvException::class);
+		new Argv(array("example.php", "input.txt"), $genericArgv);
+	}
+	
+	
 	/**
 	 * Validates for ISO date.
 	 */
-	function testValidatePass() {
+	function testValidateNamedPass() {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
@@ -266,7 +284,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Validates for ISO date, but has wrong format as parameter.
 	 */
-	function testValidateFail() {
+	function testValidateNamedFail() {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
@@ -290,6 +308,33 @@ class ArgvTest extends TestCase {
 		
 		$argvImport = new Argv(array("example.php"), $genericArgv);
 	}
+
+	/**
+	 * Validates for ISO date in positional parameter
+	 */
+	function testValidatePositionalPass() {
+		$genericArgv = new ArgvGeneric();
+		$userValue = UserValue::asMandatory();
+		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		
+		$genericArgv->addPositionalArg("date", $userValue);
+		$argvImport = new Argv(array("example.php", "2020-01-01"), $genericArgv);
+		$this->assertEquals("2020-01-01", $argvImport->getPositional(0));
+	}
+
+	/**
+	 * Validates for ISO date, but has wrong format as parameter.
+	 */
+	function testValidatePositionalFail() {
+		$genericArgv = new ArgvGeneric();
+		$userValue = UserValue::asMandatory();
+		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		$genericArgv->addPositionalArg("date", $userValue);
+		
+		$this->expectException(ArgvException::class);
+		new Argv(array("example.php", "01.01.2020"), $genericArgv);
+	}
+
 	
 	/**
 	 * Test if a defined converter class is applied to an imported value.
