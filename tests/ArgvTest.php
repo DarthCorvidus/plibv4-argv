@@ -14,54 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ArgvTest extends TestCase {
 	/**
-	 * Test to extract $argv to a raw array, keeping the position of arguments.
-	 */
-	function xtestExtractArgv() {
-		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=");
-		$extracted = array("positional01", "positional02", "date"=>"2021-01-01", "funrun"=>true, "novalue"=>"");
-		$this->assertEquals($extracted, Argv::extractArgv($argv));
-	}
-	
-	/**
-	 * Tests if an empty $argv results in an empty argument array.
-	 */
-	function xtestExtractArgvEmpty() {
-		$this->assertEquals(array(), Argv::extractArgv(array("example.php")));
-	}
-	
-	/**
-	 * Test if exception is thrown if user provides a single -- without a value.
-	 */
-	function xtestExtractArgvNoName() {
-		$this->expectException(ArgvException::class);
-		Argv::extractArgv(array("example.php", "--"));
-	}
-	
-	function xtestExtractArgvNamed() {
-		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
-		$expect = array();
-		$expect["date"] = "2021-01-01";
-		$expect["novalue"] = "";
-		$expect["conf"] = "/etc/example.conf";
-		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_NAMED));
-	}
-
-	function xtestExtractArgvBoolean() {
-		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
-		$expect = array();
-		$expect["funrun"] = TRUE;
-		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_BOOL));
-	}
-
-	function xtestExtractArgvPositional() {
-		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
-		$expect = array();
-		$expect[0] = "positional01";
-		$expect[1] = "positional02";
-		$this->assertEquals($expect, Argv::extractArgv($argv, Argv::X_POS));
-	}
-	
-	/**
 	 * Checks if --help is contained within $argv.
 	 */
 	function testHasHelp() {
@@ -72,7 +24,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Checks if --help is not contained within $argv.
 	 */
-	function xtestHasNoHelp() {
+	function testHasNoHelp() {
 		$argv = array("example.php", "--test");
 		$this->assertEquals(FALSE, Argv::hasHelp($argv));
 	}
