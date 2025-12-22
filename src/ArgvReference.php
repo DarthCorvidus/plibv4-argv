@@ -15,60 +15,69 @@ class ArgvReference {
 	}
 	
 	function getReference(): string {
+		$lines = $this->getReferenceLines();
+		return implode(PHP_EOL, $lines);
+	}
+	
+	public function getReferenceLines(): array {
 		$ref  = [];
-		$ref[] = $this->getPositionalReference();
-		$ref[] = $this->getNamedReference();
-		$ref[] = $this->getBooleanReference();
-	return implode(PHP_EOL, $ref);
+		if($this->argvModel->getPositionalCount()>0) {
+			$ref = array_merge($ref, $this->getPositionalReference());
+		}
+		if(count($this->argvModel->getArgNames())>0) {
+			$ref = array_merge($ref, $this->getNamedReference());
+		}
+		if(count($this->argvModel->getBoolean())>0) {
+			$ref = array_merge($ref, $this->getBooleanReference());
+		}
+	return $ref;
 	}
 	
-	private function getPositionalReference(): string {
+	
+	private function getPositionalReference(): array {
 		$count = $this->argvModel->getPositionalCount();
-		if($count==0) {
-			return "";
-		}
-		$return = "";
-		$return .= "Positional Arguments:".PHP_EOL;
+		$lines = [];
+		$lines[] = "Positional Arguments:";
 		for($i=0;$i<$count;$i++) {
-			$return .= "\tArgument ".($i+1).": ";
-			$return .= $this->argvModel->getPositionalName($i);
-			$return .= PHP_EOL;
+			$line = "\tArgument ".($i+1).": ";
+			$line .= $this->argvModel->getPositionalName($i);
+			if($this->argvModel->getPositionalArg($i)->isMandatory()) {
+				$line .= " (mandatory)";
+			} else {
+				$line .= " (optional)";
+			}
+			$lines[] = $line;
 		}
-	return $return;
+	return $lines;
 	}
 	
-	private function getBooleanReference(): string {
-		if(empty($this->argvModel->getBoolean())) {
-			return "";
-		}
-		$return = "";
-		$return .= "Boolean Arguments:".PHP_EOL;
+	private function getBooleanReference(): array{
+		$lines = [];
+		$lines[] = "Boolean Arguments:";
 		$longest = new LongestString();
 		$longest->addArray($this->argvModel->getBoolean());
 		foreach($this->argvModel->getBoolean() as $value) {
-			$return .= "\t--".$value.PHP_EOL;
+			$lines[] = "\t--".$value;
 		}
-	return $return;
+	return $lines;
 	}
 	
-	private function getNamedReference(): string {
+	private function getNamedReference(): array {
 		$names = $this->argvModel->getArgNames();
-		if(count($names)==0) {
-			return "";
-		}
 		$longest = new LongestString();
 		$longest->addArray($names);
-		$return = "";
-		$return .= "Named Arguments:".PHP_EOL;
+		$lines = [];
+		$lines[] = "Named Arguments:";
 		foreach($names as $name) {
 			$arg = $this->argvModel->getNamedArg($name);
-			$return .= "\t--".str_pad($name, $longest->getLength(), " ");
+			$line = "\t--".str_pad($name, $longest->getLength(), " ");
 			if($arg->isMandatory()) {
-				$return .= " (mandatory)".PHP_EOL;
+				$line .= " (mandatory)";
 			} else {
-				$return .= " (optional)".PHP_EOL;
+				$line .= " (optional)";
 			}
+			$lines[] = $line;
 		}
-	return $return;
+	return $lines;
 	}
 }
