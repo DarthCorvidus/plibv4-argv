@@ -68,7 +68,7 @@ class Argv {
 			if(!in_array($value, $extract)) {
 				continue;
 			}
-			throw new ArgvException("boolean argument must not have a value");
+			//throw new ArgvException("boolean argument must not have a value");
 		}
 		foreach($extract as $value) {
 			if(!in_array($value, $this->model->getBoolean())) {
@@ -103,6 +103,14 @@ class Argv {
 			}
 		}
 		foreach(array_keys($extract) as $key) {
+			/**
+			 * Better error message here - if a parameter is not defined as
+			 * named, but as boolean, but appears as a named parameter, throw
+			 * an exception.
+			 */
+			if(in_array($key, $this->model->getBoolean())) {
+				throw new ArgvException("boolean parameter '".$key."' must not have a value");
+			}
 			if(!in_array($key, $this->model->getArgNames())) {
 				throw new ArgvException("unexpected named parameter '".$key."'");
 			}
