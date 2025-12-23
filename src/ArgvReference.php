@@ -19,6 +19,9 @@ class ArgvReference {
 		return implode(PHP_EOL, $lines);
 	}
 	
+	/**
+	 * @return list<string>
+	 */
 	public function getReferenceLines(): array {
 		$ref  = [];
 		if($this->argvModel->getPositionalCount()>0) {
@@ -33,7 +36,9 @@ class ArgvReference {
 	return $ref;
 	}
 	
-	
+	/**
+	 * @return list<string>
+	 */
 	private function getPositionalReference(): array {
 		$count = $this->argvModel->getPositionalCount();
 		$lines = [];
@@ -50,7 +55,10 @@ class ArgvReference {
 		}
 	return $lines;
 	}
-	
+
+	/**
+	 * @return list<string>
+	 */
 	private function getBooleanReference(): array{
 		$lines = [];
 		$lines[] = "Boolean Arguments:";
@@ -61,7 +69,10 @@ class ArgvReference {
 		}
 	return $lines;
 	}
-	
+
+	/**
+	 * @return list<string>
+	 */
 	private function getNamedReference(): array {
 		$names = $this->argvModel->getArgNames();
 		$longest = new LongestString();
