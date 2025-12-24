@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+namespace plibv4\argv;
+use plibv4\uservalue\UserValue;
 use PHPUnit\Framework\TestCase;
 require_once __DIR__."/../example/ArgvExample.php";
 class ArgvReferenceTest extends TestCase {

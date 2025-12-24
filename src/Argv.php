@@ -4,7 +4,11 @@
  * @author Claus-Christoph Küthe <floss@vm01.telton.de>
  * @license LGPL
  */
-
+namespace plibv4\argv;
+use plibv4\uservalue\UserValue;
+use plibv4\uservalue\MandatoryException;
+use plibv4\validate\ValidateException;
+use OutOfRangeException;
 /**
  * Argv extracts parameters from $argv, as defined in an ArgvModel. As of yet,
  * it only handles long parameters, such as --param, both with or without a
@@ -179,7 +183,7 @@ class Argv {
 	 * 
 	 * @param string $key
 	 * @return string
-	 * @throws Exception
+	 * @throws OutOfRangeException
 	 */
 	function getValue($key): string {
 		if(!$this->hasValue($key)) {
@@ -205,7 +209,7 @@ class Argv {
 	 * not defined in an instance of ArgvModel.
 	 * @param string $key
 	 * @return bool
-	 * @throws Exception
+	 * @throws OutOfRangeException
 	 */
 	function getBoolean($key):bool {
 		if(!in_array($key, $this->model->getBoolean())) {

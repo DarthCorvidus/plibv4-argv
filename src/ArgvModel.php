@@ -4,7 +4,8 @@
  * @author Claus-Christoph Küthe <floss@vm01.telton.de>
  * @license LGPL
  */
-
+namespace plibv4\argv;
+use plibv4\uservalue\UserValue;
 /**
  * Interface for model as expected by Argv; ArgvModel is supposed to contain
  * several ArgModels, one for each argument.
@@ -13,7 +14,7 @@ interface ArgvModel {
 	/**
 	 * Get the names of named arguments as an array, eg. [input, output] for
 	 * what should be 'example.php --input=<value> --output=<value>'.
-	 * @return string[]
+	 * @return list<string>
 	 */
 	public function getArgNames(): array;
 	
@@ -47,7 +48,7 @@ interface ArgvModel {
 	 * return an array of pure boolean parameters without a value, which will
 	 * evaluate to true if set; eg. the array("run", "log") stands for the
 	 * boolean parameters 'example.php --run --log'.
-	 * @return string[] Description
+	 * @return list<string> Description
 	 */
 	function getBoolean(): array;
 }

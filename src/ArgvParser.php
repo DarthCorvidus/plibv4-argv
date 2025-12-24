@@ -1,4 +1,5 @@
 <?php
+namespace plibv4\argv;
 final class ArgvParser {
 	/** var list<string> */
 	private array $argv = [];

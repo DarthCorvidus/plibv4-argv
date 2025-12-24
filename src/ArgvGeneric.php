@@ -4,7 +4,9 @@
  * @author Claus-Christoph Küthe <floss@vm01.telton.de>
  * @license LGPL
  */
-
+namespace plibv4\argv;
+use plibv4\uservalue\UserValue;
+use OutOfRangeException;
 /**
  * Generic implementation of ArgvModel
  * 

@@ -4,5 +4,7 @@
  * @author Claus-Christoph Küthe <floss@vm01.telton.de>
  * @license LGPL
  */
+namespace plibv4\argv;
+use RuntimeException;
 class ArgvException extends RuntimeException {
 }

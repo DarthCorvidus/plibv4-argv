@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace plibv4\argv;
 use PHPUnit\Framework\TestCase;
 /*
  * To change this license header, choose License Headers in Project Properties.
