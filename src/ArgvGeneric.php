@@ -17,13 +17,13 @@ use OutOfRangeException;
  */
 class ArgvGeneric implements ArgvModel {
 	/** @var array<string, UserValue> */
-	private array $namedArgs = array();
+	private array $namedArgs = [];
 	/** @var list<string> */
-	private array $booleanArgs = array();
+	private array $booleanArgs = [];
 	/** @var list<UserValue> */
-	private array $positionalArgs = array();
+	private array $positionalArgs = [];
 	/** @var list<string> */
-	private array $positionalNames = array();
+	private array $positionalNames = [];
 	
 	/**
 	 * Add a named argument, such as example.php --file=<filename>

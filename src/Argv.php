@@ -22,11 +22,11 @@ class Argv {
 	/** @var list<string> */
 	private array $argv;
 	/** @var list<string> */
-	private array $availablePositional = array();
+	private array $availablePositional = [];
 	/** @var array<string, string> */
-	private array $availableNamed = array();
+	private array $availableNamed = [];
 	/** @var list<string> */
-	private array $availableBoolean = array();
+	private array $availableBoolean = [];
 	private ArgvParser $parser;
 	/**
 	 * 
@@ -53,7 +53,7 @@ class Argv {
 	 */
 	private function importBoolean(): array {
 		$extract = $this->parser->getBoolean();
-		$result = array();
+		$result = [];
 		foreach($this->model->getBoolean() as $value) {
 			if(in_array($value, $extract)) {
 				$result[] = $value;
@@ -74,7 +74,7 @@ class Argv {
 	 */
 	private function importNamed(): array {
 		$extract = $this->parser->getNamed();
-		$result = array();
+		$result = [];
 		foreach($this->model->getArgNames() as $value) {
 			$uservalue = $this->model->getNamedArg($value);
 			try {
@@ -114,7 +114,7 @@ class Argv {
 	 */
 	private function importPositional(): array {
 		$extract = $this->parser->getPositional();
-		$result = array();
+		$result = [];
 		for($i=0;$i<$this->model->getPositionalCount();$i++) {
 			$uservalue = $this->model->getPositionalArg($i);
 			try {
@@ -224,7 +224,7 @@ class Argv {
 	 * @return array
 	 */
 	public function getNamedPositionalValues(): array {
-		$named = array();
+		$named = [];
 		foreach($this->availablePositional as $key => $value) {
 			$named[$this->model->getPositionalName($key)] = $value;
 		}
