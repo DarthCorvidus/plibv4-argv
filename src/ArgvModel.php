@@ -26,12 +26,12 @@ interface ArgvModel {
 	public function getNamedArg(string $name): UserValue;
 
 	/**
-	 * Get number of positional accounts
+	 * Get number of positional arguments
 	 */
 	public function getPositionalCount(): int;
 	
 	/**
-	 * Get ArgModel for positional account (0-indexed)
+	 * Get ArgModel for positional argument (0-indexed)
 	 * @param int $i
 	 */
 	public function getPositionalArg(int $i): UserValue;
