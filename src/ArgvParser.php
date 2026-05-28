@@ -1,4 +1,9 @@
 <?php
+/**
+ * @copyright (c) 2024, Claus-Christoph Küthe
+ * @author Claus-Christoph Küthe <floss@vm01.telton.de>
+ * @license LGPL
+ */
 namespace plibv4\argv;
 final class ArgvParser {
 	/** var list<string> */
