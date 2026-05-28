@@ -55,20 +55,9 @@ class Argv {
 		$extract = $this->parser->getBoolean();
 		$result = array();
 		foreach($this->model->getBoolean() as $value) {
-			#if(isset($extract[$value])) {
 			if(in_array($value, $extract)) {
 				$result[] = $value;
-				continue;
 			}
-			/**
-			 * Psalm is not quite correct here; I suppose that it expects 'else',
-			 * but I dislike else.
-			 * @psalm-suppress RedundantCondition
-			 */
-			if(!in_array($value, $extract)) {
-				continue;
-			}
-			//throw new ArgvException("boolean argument must not have a value");
 		}
 		foreach($extract as $value) {
 			if(!in_array($value, $this->model->getBoolean())) {
