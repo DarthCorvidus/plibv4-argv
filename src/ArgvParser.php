@@ -57,7 +57,7 @@ final class ArgvParser {
 	 * returns positional values ('script php positional1') as numeric array.
 	 * @return list<string>
 	 */
-	function getPositional(): array {
+	public function getPositional(): array {
 		/** @var list<string> */
 		return $this->positional;
 	}
@@ -66,7 +66,7 @@ final class ArgvParser {
 	 * Returns named values ('--name=value') as associative array.
 	 * @return array<string, string>
 	 */
-	function getNamed(): array {
+	public function getNamed(): array {
 		/** @var array<string, string> */
 		return $this->named;
 	}
@@ -75,9 +75,8 @@ final class ArgvParser {
 	 * Returns boolean values ('--flag') as numeric array
 	 * @return list<string>
 	 */
-	function getBoolean(): array {
+	public function getBoolean(): array {
 		/** @var list<string> */
 		return $this->boolean;
 	}
-	
 }
