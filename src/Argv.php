@@ -146,19 +146,19 @@ class Argv {
 	 * @param list<string> $argv
 	 * @return bool
 	 */
-	static function hasHelp(array $argv): bool {
+	public static function hasHelp(array $argv): bool {
 		$parser = new ArgvParser($argv);
 	return $parser->hasHelp();
 	}
 	
 	/**
 	 * Checks whether a certain parameter is available or not. A parameter is
-	 * available if it was used by the calling user or if it's ArgModel has a
+	 * available if it was used by the calling user or if its ArgModel has a
 	 * default value.
 	 * @param string $key
 	 * @return bool
 	 */
-	function hasValue($key): bool {
+	public function hasValue($key): bool {
 		return isset($this->availableNamed[$key]);
 	}
 	/**
@@ -170,18 +170,18 @@ class Argv {
 	 * @return string
 	 * @throws OutOfRangeException
 	 */
-	function getValue($key): string {
+	public function getValue($key): string {
 		if(!$this->hasValue($key)) {
 			throw new OutOfRangeException("argument value ".$key." doesn't exist");
 		}
 	return $this->availableNamed[$key];
 	}
 	
-	function hasPositional(int $pos): bool {
+	public function hasPositional(int $pos): bool {
 		return isset($this->availablePositional[$pos]);
 	}
 	
-	function getPositional(int $pos): string {
+	public function getPositional(int $pos): string {
 		if(!$this->hasPositional($pos)) {
 			throw new OutOfRangeException("positional argument ".$pos." doesn't exist");
 		}
@@ -196,7 +196,7 @@ class Argv {
 	 * @return bool
 	 * @throws OutOfRangeException
 	 */
-	function getBoolean($key):bool {
+	public function getBoolean($key):bool {
 		if(!in_array($key, $this->model->getBoolean())) {
 			throw new OutOfRangeException("boolean argument ".$key." is not defined");
 		}
@@ -207,7 +207,7 @@ class Argv {
 	 * Get all named values as array.
 	 * @return array
 	 */
-	function getNamedValues(): array {
+	public function getNamedValues(): array {
 		return $this->availableNamed;
 	}
 	
@@ -215,7 +215,7 @@ class Argv {
 	 * Get all positional values as array (numerical index)
 	 * @return array
 	 */
-	function getPositionalValues(): array {
+	public function getPositionalValues(): array {
 		return $this->availablePositional;
 	}
 	
@@ -223,7 +223,7 @@ class Argv {
 	 * Get all positional values as array (associative index)
 	 * @return array
 	 */
-	function getNamedPositionalValues(): array {
+	public function getNamedPositionalValues(): array {
 		$named = array();
 		foreach($this->availablePositional as $key => $value) {
 			$named[$this->model->getPositionalName($key)] = $value;
