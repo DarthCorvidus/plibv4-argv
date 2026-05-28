@@ -38,10 +38,6 @@ class Argv {
 		$this->argv = $argv;
 		$this->parser = new ArgvParser($argv);
 		$this->import();
-		#$this->getAvailable();
-		#$this->sanityCheck();
-		#$this->validate();
-		#$this->convert();
 	}
 
 	private function import(): void {
