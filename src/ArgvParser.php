@@ -6,13 +6,13 @@
  */
 namespace plibv4\argv;
 final class ArgvParser {
-	/** var list<string> */
+	/** @var list<string> */
 	private array $argv = [];
-	/** var list<string> */
+	/** @var list<string> */
 	private array $positional = [];
-	/** var array<string, string> */
+	/** @var array<string, string> */
 	private array $named = [];
-	/** var list<string> */
+	/** @var list<string> */
 	private array $boolean = [];
 	/**
 	 * 
@@ -36,7 +36,7 @@ final class ArgvParser {
 			if($i === 0) {
 				continue;
 			}
-			$stringValue = (string)$this->argv[$i];
+			$stringValue = $this->argv[$i];
 			if($stringValue==="--") {
 				throw new ArgvException("Named argument with no name found (--)");
 			}
