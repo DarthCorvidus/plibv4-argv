@@ -40,9 +40,9 @@ final class ArgvParser {
 			if($stringValue==="--") {
 				throw new ArgvException("Named argument with no name found (--)");
 			}
-			if(substr($stringValue, 0, 2)=="--") {
+			if(substr($stringValue, 0, 2) === "--") {
 				$exp = explode("=", $stringValue, 2);
-				if(count($exp)==2) {
+				if(count($exp) === 2) {
 					$this->named[substr($exp[0], 2)] = $exp[1];
 					continue;
 				}
