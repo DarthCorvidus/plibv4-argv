@@ -21,18 +21,20 @@ interface ArgvModel {
 	/**
 	 * Get model for named argument.
 	 * @param string $name
-	 * @return UserValue Description
+	 * @return UserValue defines conversion, validation, default value and mandatory flag
 	 */
 	public function getNamedArg(string $name): UserValue;
 
 	/**
 	 * Get number of positional arguments
+	 * @return int amount of positional arguments
 	 */
 	public function getPositionalCount(): int;
 	
 	/**
 	 * Get ArgModel for positional argument (0-indexed)
 	 * @param int $i
+	 * @return UserValue Defines conversion, validation, default value and mandatory flag
 	 */
 	public function getPositionalArg(int $i): UserValue;
 	
