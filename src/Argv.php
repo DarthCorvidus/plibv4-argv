@@ -82,12 +82,9 @@ class Argv {
 					$uservalue->setValue($extract[$value]);
 				}
 				if($uservalue->getValue()!=="") {
-					$normalized = $uservalue->getValue();
-					$result[$value] = $normalized;
+					$result[$value] = $uservalue->getValue();
 				}
-			} catch (MandatoryException $e) {
-				throw new ArgvException("--".$value.": ".$e->getMessage());
-			} catch (ValidateException $e) {
+			} catch (MandatoryException | ValidateException $e) {
 				throw new ArgvException("--".$value.": ".$e->getMessage());
 			}
 		}
@@ -124,9 +121,7 @@ class Argv {
 				if($uservalue->getValue()!=="") {
 					$result[] = $uservalue->getValue();
 				}
-			} catch (MandatoryException $e) {
-				throw new ArgvException($e->getMessage());
-			} catch (ValidateException $e) {
+			} catch (MandatoryException | ValidateException $e) {
 				throw new ArgvException($e->getMessage());
 			}
 
