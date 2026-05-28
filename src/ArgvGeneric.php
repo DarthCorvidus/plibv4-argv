@@ -11,7 +11,7 @@ use OutOfRangeException;
  * Generic implementation of ArgvModel
  * 
  * The idea behind Argv is that you write your own implementations of Argv to
- * tuck away parameter definitions into one class. However, this may seem to
+ * tuck away parameter definitions into one class. However, this may seem too
  * much of an effort if you write a small script with only a few parameters.
  * ArgvGeneric lets you define parameters outside of your own implementation.
  */
