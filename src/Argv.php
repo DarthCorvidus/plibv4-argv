@@ -52,7 +52,7 @@ class Argv {
 	 * @throws ArgvException
 	 */
 	private function importBoolean(): array {
-		$extract = $this->parser->getBoolean();
+		$extract = $this->parser->getBooleanFlags();
 		$result = [];
 		foreach($this->model->getBoolean() as $value) {
 			if(in_array($value, $extract)) {
@@ -73,7 +73,7 @@ class Argv {
 	 * @throws ArgvException
 	 */
 	private function importNamed(): array {
-		$extract = $this->parser->getNamed();
+		$extract = $this->parser->getNamedArgs();
 		$result = [];
 		foreach($this->model->getArgNames() as $value) {
 			$uservalue = $this->model->getNamedArg($value);
@@ -110,7 +110,7 @@ class Argv {
 	 * @throws ArgvException
 	 */
 	private function importPositional(): array {
-		$extract = $this->parser->getPositional();
+		$extract = $this->parser->getPositionalArgs();
 		$result = [];
 		for($i=0;$i<$this->model->getPositionalCount();$i++) {
 			$uservalue = $this->model->getPositionalArg($i);

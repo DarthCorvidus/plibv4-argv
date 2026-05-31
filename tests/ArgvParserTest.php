@@ -24,9 +24,9 @@ class ArgvParserTest extends TestCase {
 		$expectedBoolean = array("funrun");
 		$raw = new ArgvParser($argv);
 		
-		$this->assertEquals($expectedPositional, $raw->getPositional());
-		$this->assertEquals($expectedNamed, $raw->getNamed());
-		$this->assertEquals($expectedBoolean, $raw->getBoolean());
+		$this->assertEquals($expectedPositional, $raw->getPositionalArgs());
+		$this->assertEquals($expectedNamed, $raw->getNamedArgs());
+		$this->assertEquals($expectedBoolean, $raw->getBooleanFlags());
 	}
 	
 	/**
@@ -34,9 +34,9 @@ class ArgvParserTest extends TestCase {
 	 */
 	function testExtractArgvEmpty() {
 		$parser = new ArgvParser(array("index.php"));
-		$this->assertEquals(array(), $parser->getPositional());
-		$this->assertEquals(array(), $parser->getNamed());
-		$this->assertEquals(array(), $parser->getBoolean());
+		$this->assertEquals(array(), $parser->getPositionalArgs());
+		$this->assertEquals(array(), $parser->getNamedArgs());
+		$this->assertEquals(array(), $parser->getBooleanFlags());
 	}
 	
 	/**
@@ -54,7 +54,7 @@ class ArgvParserTest extends TestCase {
 		$expect["novalue"] = "";
 		$expect["conf"] = "/etc/example.conf";
 		$parser = new ArgvParser($argv);
-		$this->assertEquals($expect, $parser->getNamed());
+		$this->assertEquals($expect, $parser->getNamedArgs());
 	}
 
 	function testExtractArgvBoolean() {
@@ -62,7 +62,7 @@ class ArgvParserTest extends TestCase {
 		$expect = array();
 		$expect[] = "funrun";
 		$parser = new ArgvParser($argv);
-		$this->assertEquals($expect, $parser->getBoolean());
+		$this->assertEquals($expect, $parser->getBooleanFlags());
 	}
 
 	function testExtractArgvPositional() {
@@ -72,7 +72,7 @@ class ArgvParserTest extends TestCase {
 		$expect[1] = "positional02";
 		$expect[2] = "positional03";
 		$parser = new ArgvParser($argv);
-		$this->assertEquals($expect, $parser->getPositional());
+		$this->assertEquals($expect, $parser->getPositionalArgs());
 	}
 	
 	/**
