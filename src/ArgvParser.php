@@ -5,6 +5,9 @@
  * @license LGPL
  */
 namespace plibv4\argv;
+
+use \OutOfBoundsException;
+
 final class ArgvParser {
 	/** @var list<string> */
 	private array $argv = [];
@@ -63,6 +66,27 @@ final class ArgvParser {
 	}
 	
 	/**
+	 * Check if positional argument exists.
+	 * @return bool 
+	 */
+	public function hasPositionalArg(int $i): bool {
+		return isset($this->positional[$i]);
+	}
+
+	/**
+	 * Get positional argument value.
+	 * @param int $i 0-indexed position
+	 * @return string
+	 * @throws OutOfBoundsException
+	 */
+	public function getPositionalArg(int $i): string {
+		if(!$this->hasPositionalArg($i)) {
+			throw new OutOfBoundsException("Positional option {$i} does not exist.");
+		}
+		return $this->positional[$i];
+	}
+
+	/**
 	 * Returns named values ('--name=value') as associative array.
 	 * @return array<string, string>
 	 */
@@ -70,7 +94,27 @@ final class ArgvParser {
 		/** @var array<string, string> */
 		return $this->named;
 	}
-	
+
+	/**
+	 * Check if positional arg exists.
+	 * @return bool 
+	 */
+	public function hasNamedArg(string $name): bool {
+		return isset($this->named[$name]);
+	}
+
+	/**
+	 * Get named argument value.
+	 * @return string
+	 * @throws OutOfBoundsException
+	 */
+	public function getNamedArg(string $name): string {
+		if(!$this->hasNamedArg($name)) {
+			throw new OutOfBoundsException("Named option --{$name} does not exist or has no value.");
+		}
+		return $this->named[$name];
+	}
+
 	/**
 	 * Returns boolean values ('--flag') as numeric array
 	 * @return list<string>
@@ -78,5 +122,9 @@ final class ArgvParser {
 	public function getBooleanFlags(): array {
 		/** @var list<string> */
 		return $this->boolean;
+	}
+
+	public function hasBooleanFlag(string $key): bool {
+		return in_array($key, $this->boolean, true);
 	}
 }

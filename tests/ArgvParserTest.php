@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 namespace plibv4\argv;
+
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -57,6 +59,26 @@ class ArgvParserTest extends TestCase {
 		$this->assertEquals($expect, $parser->getNamedArgs());
 	}
 
+	function testHasNamedArg() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->assertEquals(true, $parser->hasNamedArg("date"));
+	}
+
+	function testGetNamedArg() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->assertEquals("2021-01-01", $parser->getNamedArg("date"));
+	}
+
+	function testGetNamedArgNotExisting() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->expectException(OutOfBoundsException::class);
+		$this->expectExceptionMessage("Named option --bogus does not exist or has no value.");
+		$parser->getNamedArg("bogus");
+	}
+
 	function testExtractArgvBoolean() {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$expect = array();
@@ -74,7 +96,33 @@ class ArgvParserTest extends TestCase {
 		$parser = new ArgvParser($argv);
 		$this->assertEquals($expect, $parser->getPositionalArgs());
 	}
-	
+
+	function testGetPositionalArg() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->assertEquals("positional01", $parser->getPositionalArg(0));
+	}
+
+	function testGetPositionalArgNotExisting() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->expectException(OutOfBoundsException::class);
+		$this->expectExceptionMessage("Positional option 2 does not exist.");
+		$parser->getPositionalArg(2);
+	}
+
+	function testHasBooleanFlag() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->assertEquals(true, $parser->hasBooleanFlag("funrun"));
+	}
+
+	function testDoNotHaveBooleanFlag() {
+		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$parser = new ArgvParser($argv);
+		$this->assertEquals(false, $parser->hasBooleanFlag("exec"));
+	}
+
 	/**
 	 * Checks if --help is contained within $argv.
 	 */

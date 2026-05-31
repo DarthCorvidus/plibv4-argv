@@ -18,6 +18,12 @@
 				<file name="src/ArgvReference.php" />
 			</errorLevel>
 		</UnusedClass>
+		<UnusedMethod>
+			<errorLevel type="suppress">
+				<!-- See above -->
+				<file name="src/ArgvParser.php" />
+			</errorLevel>
+		</UnusedMethod>
 		<ClassMustBeFinal>
 			<errorLevel type="suppress">
 				<!-- actually, I extend ArgvGeneric & Argv very often. It is the
