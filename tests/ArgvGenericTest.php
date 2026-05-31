@@ -15,63 +15,63 @@ use OutOfRangeException;
  *
  * @author hm
  */
-class ArgvGenericTest extends TestCase {
-	function testEmptyGeneric() {
+final class ArgvGenericTest extends TestCase {
+	function testEmptyGeneric(): void {
 		$generic = new ArgvGeneric();
 		$this->assertEquals($generic->getArgNames(), array());
 		$this->assertEquals($generic->getBoolean(), array());
 		$this->assertEquals($generic->getPositionalCount(), 0);
 	}
 
-	function testGetBooleanArgs() {
+	function testGetBooleanArgs(): void {
 		$generic = new ArgvGeneric();
 		$generic->setBooleanArgs(array("force", "skip"));
 		$generic->addBooleanArg("test");
 		$this->assertEquals($generic->getBoolean(), array("force", "skip", "test"));
 	}
 
-	function testGetArgNames() {
+	function testGetArgNames(): void {
 		$generic = new ArgvGeneric();
 		$generic->addNamedArg("input", UserValue::asMandatory());
 		$generic->addNamedArg("output", UserValue::asMandatory());
 		$this->assertEquals($generic->getArgNames(), array("input", "output"));
 	}
 	
-	function testGetNamedArg() {
+	function testGetNamedArg(): void {
 		$generic = new ArgvGeneric();
 		$generic->addNamedArg("input", UserValue::asMandatory());
 		$this->assertInstanceOf(UserValue::class, $generic->getNamedArg("input"));
 	}
 
-	function testGetNamedArgUndefined() {
+	function testGetNamedArgUndefined(): void {
 		$generic = new ArgvGeneric();
 		$generic->addNamedArg("input", UserValue::asMandatory());
 		$this->expectException(OutOfRangeException::class);
 		$generic->getNamedArg("output");
 	}
 	
-	function testGetPositionalArgCount() {
+	function testGetPositionalArgCount(): void {
 		$generic = new ArgvGeneric();
 		$generic->addPositionalArg("input", UserValue::asMandatory());
 		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertEquals(2, $generic->getPositionalCount());
 	}
 	
-	function testGetPositionalArg() {
+	function testGetPositionalArg(): void {
 		$generic = new ArgvGeneric();
 		$generic->addPositionalArg("input", UserValue::asMandatory());
 		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertInstanceOf(UserValue::class, $generic->getPositionalArg(0));
 	}
 	
-	function testGetPositionalName() {
+	function testGetPositionalName(): void {
 		$generic = new ArgvGeneric();
 		$generic->addPositionalArg("input", UserValue::asMandatory());
 		$generic->addPositionalArg("output", UserValue::asMandatory());
 		$this->assertEquals("input", $generic->getPositionalName(0));
 	}
 	
-	function testGetPositionalArgMissing() {
+	function testGetPositionalArgMissing(): void {
 		$generic = new ArgvGeneric();
 		$generic->addPositionalArg("input", UserValue::asMandatory());
 		$generic->addPositionalArg("output", UserValue::asMandatory());
@@ -79,7 +79,7 @@ class ArgvGenericTest extends TestCase {
 		$generic->getPositionalArg(3);
 	}
 
-	function testGetPositionalNameMissing() {
+	function testGetPositionalNameMissing(): void {
 		$generic = new ArgvGeneric();
 		$generic->addPositionalArg("input", UserValue::asMandatory());
 		$generic->addPositionalArg("output", UserValue::asMandatory());

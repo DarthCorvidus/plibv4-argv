@@ -20,11 +20,11 @@ use OutOfRangeException;
  *
  * @author hm
  */
-class ArgvTest extends TestCase {
+final class ArgvTest extends TestCase {
 	/**
 	 * Checks if --help is contained within $argv.
 	 */
-	function testHasHelp() {
+	function testHasHelp(): void {
 		$argv = array("example.php", "--help");
 		$this->assertEquals(true, Argv::hasHelp($argv));
 	}
@@ -32,7 +32,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Checks if --help is not contained within $argv.
 	 */
-	function testHasNoHelp() {
+	function testHasNoHelp(): void {
 		$argv = array("example.php", "--test");
 		$this->assertEquals(FALSE, Argv::hasHelp($argv));
 	}
@@ -40,9 +40,9 @@ class ArgvTest extends TestCase {
 
 	/**
 	 * Tests to define three boolean parameter, using them in $argv and check
-	 * whether they equal TRUE. 
+	 * whether they equal TRUE.
 	 */
-	function testArgBoolean() {
+	function testArgBoolean(): void {
 		$generic = new ArgvGeneric();
 		$generic->addBooleanArg("first");
 		$generic->addBooleanArg("second");
@@ -57,7 +57,7 @@ class ArgvTest extends TestCase {
 	 * Tests to define three boolean parameters without using them in $argv,
 	 * checking them to default to FALSE
 	 */
-	function testArgBooleanFalseIfNotUsed() {
+	function testArgBooleanFalseIfNotUsed(): void {
 		$generic = new ArgvGeneric();
 		$generic->addBooleanArg("first");
 		$generic->addBooleanArg("second");
@@ -72,7 +72,7 @@ class ArgvTest extends TestCase {
 	 * Test that accessing an undefined boolean parameter results in an
 	 * exception.
 	 */
-	function testArgBooleanUndefined() {
+	function testArgBooleanUndefined(): void {
 		$generic = new ArgvGeneric();
 		$generic->addBooleanArg("first");
 		$argv = new Argv(array("example.php"), $generic);
@@ -85,24 +85,24 @@ class ArgvTest extends TestCase {
 	 * script's caller results in an exception as well (therefore alerting the
 	 * user of possible typos)
 	 */
-	function testArgBooleanUnexpected() {
+	function testArgBooleanUnexpected(): void {
 		$generic = new ArgvGeneric();
 		$this->expectException(ArgvException::class);
-		$argv = new Argv(array("example.php", "--first"), $generic);
+		new Argv(array("example.php", "--first"), $generic);
 	}
 
-	function testArgBooleanWithValue() {
+	function testArgBooleanWithValue(): void {
 		$generic = new ArgvGeneric();
 		$generic->addBooleanArg("first");
 		$this->expectException(ArgvException::class);
 		$this->expectExceptionMessage("boolean parameter 'first' must not have a value");
-		$argv = new Argv(array("example.php", "--first=someValue"), $generic);
+		new Argv(array("example.php", "--first=someValue"), $generic);
 	}
 
 	/**
 	 * Test to define a named argument and import it's value from $argv.
 	 */
-	function testNamedArg() {
+	function testNamedArg(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addNamedArg("input", UserValue::asMandatory());
 		$argvImport = new Argv(array("example.php", "--input=/root/inputfile.txt"), $genericArgv);
@@ -113,7 +113,7 @@ class ArgvTest extends TestCase {
 	 * Some arguments are optional. If $argv does not contain them, no error is
 	 * thrown when constructing Argv, and Argv::hasValue is false.
 	 */
-	function testOptionalNamedArg() {
+	function testOptionalNamedArg(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addNamedArg("optional", UserValue::asOptional());
 		$argvImport = new Argv(array("example.php"), $genericArgv);
@@ -124,7 +124,7 @@ class ArgvTest extends TestCase {
 	 * You're not supposed to access an optional argument without checking if
 	 * it exists first.
 	 */
-	function testOptionalNamedArgAccess() {
+	function testOptionalNamedArgAccess(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addNamedArg("optional", UserValue::asOptional());
 		$argvImport = new Argv(array("example.php"), $genericArgv);
@@ -136,7 +136,7 @@ class ArgvTest extends TestCase {
 	 * If a parameter is defaulted, Argv falls back to the default value if the
 	 * parameter is not used on launch.
 	 */
-	function testOptionalDefaulted() {
+	function testOptionalDefaulted(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValue("graceful");
@@ -150,7 +150,7 @@ class ArgvTest extends TestCase {
 	 * @todo Decide on behaviour here. Should the user be allowed to override
 	 * a default value by supplying an empty string?
 	 */
-	function testDefaultedEmpty() {
+	function testDefaultedEmpty(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValue("graceful");
@@ -166,7 +166,7 @@ class ArgvTest extends TestCase {
 	 * If a parameter is defaulted, Argv is supposed to honor the parameters
 	 * given at launch.
 	 */
-	function testOptionalDefaultOverrule() {
+	function testOptionalDefaultOverrule(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValue("graceful");
@@ -179,12 +179,12 @@ class ArgvTest extends TestCase {
 	/**
 	 * Users are forced to supply mandatory parameters on program launch.
 	 */
-	function testNamedArgMandatoryMissing() {
+	function testNamedArgMandatoryMissing(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addNamedArg("frontend", UserValue::asMandatory());
 
 		$this->expectException(ArgvException::class);
-		$argvImport = new Argv(array("example.php"), $genericArgv);
+		new Argv(array("example.php"), $genericArgv);
 	}
 
 	/**
@@ -203,7 +203,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * '0' should not be treated as 'empty' [typical PHP error].
 	 */
-	function testNamedArgMandatoryZero() {
+	function testNamedArgMandatoryZero(): void {
 		$genericArgv = new ArgvGeneric();
 		
 		$genericArgv->addNamedArg("frontend", UserValue::asMandatory());
@@ -214,13 +214,13 @@ class ArgvTest extends TestCase {
 	/**
 	 * Unexpected named arguments will throw an error.
 	 */
-	function testNamedArgUnexpected() {
+	function testNamedArgUnexpected(): void {
 		$genericArgv = new ArgvGeneric();
 		$this->expectException(ArgvException::class);
-		$argvImport = new Argv(array("example.php", "--frontend=new"), $genericArgv);
+		new Argv(array("example.php", "--frontend=new"), $genericArgv);
 	}
 	
-	function testPositionalArgument() {
+	function testPositionalArgument(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
@@ -233,7 +233,7 @@ class ArgvTest extends TestCase {
 	 * Positional arguments are relative: accept that a named argument is placed
 	 * in between (user should be punished though, for lack of aesthetics).
 	 */
-	function testPositionalArgumentWithMuddledNamed() {
+	function testPositionalArgumentWithMuddledNamed(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
@@ -247,7 +247,7 @@ class ArgvTest extends TestCase {
 	 * If trying to access an undefined positional argument, an exception will
 	 * be thrown.
 	 */
-	function testPositionalArgumentUndefined() {
+	function testPositionalArgumentUndefined(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$argvImport = new Argv(array("example.php", "input.txt"), $genericArgv);
@@ -260,14 +260,14 @@ class ArgvTest extends TestCase {
 	 * If the user supplies an unexpected positional argument, an ArgvException
 	 * will be thrown.
 	 */
-	function testPositionalArgumentUnexpected() {
+	function testPositionalArgumentUnexpected(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$this->expectException(ArgvException::class);
 		new Argv(array("example.php", "input.txt", "output.txt"), $genericArgv);
 	}
 
-	function testPositionalArgumentMissing() {
+	function testPositionalArgumentMissing(): void {
 		$genericArgv = new ArgvGeneric();
 		$genericArgv->addPositionalArg("input", UserValue::asMandatory());
 		$genericArgv->addPositionalArg("output", UserValue::asMandatory());
@@ -279,7 +279,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Validates for ISO date.
 	 */
-	function testValidateNamedPass() {
+	function testValidateNamedPass(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
@@ -292,35 +292,34 @@ class ArgvTest extends TestCase {
 	/**
 	 * Validates for ISO date, but has wrong format as parameter.
 	 */
-	function testValidateNamedFail() {
+	function testValidateNamedFail(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
 		$genericArgv->addNamedArg("date", $userValue);
 		
 		$this->expectException(ArgvException::class);
-		$argvImport = new Argv(array("example.php", "--date=01.01.2020"), $genericArgv);
+		new Argv(array("example.php", "--date=01.01.2020"), $genericArgv);
 	}
 
 	/**
 	 * Validates default value
+	 *
 	 * @Todo: this must not throw an ArgvException - this is a compile time
 	 * and not a runtime exception.
 	 */
-	function testValidateDefaultFail() {
-		$genericArgv = new ArgvGeneric();
+	function testValidateDefaultFail(): void {
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
+		
 		$this->expectException(ValidateException::class);
 		$userValue->setValue("01.01.2020");
-		
-		$argvImport = new Argv(array("example.php"), $genericArgv);
 	}
 
 	/**
 	 * Validates for ISO date in positional parameter
 	 */
-	function testValidatePositionalPass() {
+	function testValidatePositionalPass(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
@@ -333,7 +332,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Validates for ISO date, but has wrong format as parameter.
 	 */
-	function testValidatePositionalFail() {
+	function testValidatePositionalFail(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateDate(ValidateDate::ISO));
@@ -347,7 +346,7 @@ class ArgvTest extends TestCase {
 	/**
 	 * Test if a defined converter class is applied to an imported value.
 	 */
-	function testConvert() {
+	function testConvert(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateTime());
@@ -358,9 +357,9 @@ class ArgvTest extends TestCase {
 		$this->assertEquals("4500", $argvImport->getValue("time"));
 	}
 	/**
-	 * Test if a converter class is applied to a predefined default value; 
+	 * Test if a converter class is applied to a predefined default value;
 	 */
-	function testConvertDefaulted() {
+	function testConvertDefaulted(): void {
 		$genericArgv = new ArgvGeneric();
 		$userValue = UserValue::asMandatory();
 		$userValue->setValidate(new ValidateTime());
@@ -372,8 +371,9 @@ class ArgvTest extends TestCase {
 		$this->assertEquals("7200", $argvImport->getValue("time"));
 	}
 
-	function testGetNamedValues() {
+	function testGetNamedValues(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected = [];
 		$expected["date"] = "2021-01-01";
 		$expected["conf"] = "/etc/example.conf";
 		$genericArgv = new ArgvGeneric();
@@ -387,8 +387,9 @@ class ArgvTest extends TestCase {
 		$this->assertEquals($expected, $argvImport->getNamedValues());
 	}
 
-	function testGetPositionalValues() {
+	function testGetPositionalValues(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected = [];
 		$expected[0] = "positional01";
 		$expected[1] = "positional02";
 		$genericArgv = new ArgvGeneric();
@@ -402,8 +403,9 @@ class ArgvTest extends TestCase {
 		$this->assertEquals($expected, $argvImport->getPositionalValues());
 	}
 
-	function testGetNamedPositionalValues() {
+	function testGetNamedPositionalValues(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
+		$expected = [];
 		$expected["input"] = "positional01";
 		$expected["output"] = "positional02";
 		$genericArgv = new ArgvGeneric();

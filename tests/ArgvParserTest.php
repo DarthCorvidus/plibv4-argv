@@ -15,11 +15,11 @@ use PHPUnit\Framework\TestCase;
  *
  * @author hm
  */
-class ArgvParserTest extends TestCase {
+final class ArgvParserTest extends TestCase {
 	/**
 	 * Test to extract $argv to a raw array, keeping the position of arguments.
 	 */
-	function testParseArgvPositional() {
+	function testParseArgvPositional(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=");
 		$expectedPositional = array("positional01", "positional02");
 		$expectedNamed = array("date"=>"2021-01-01", "novalue"=>"");
@@ -34,7 +34,7 @@ class ArgvParserTest extends TestCase {
 	/**
 	 * Tests if an empty $argv results in an empty argument array.
 	 */
-	function testExtractArgvEmpty() {
+	function testExtractArgvEmpty(): void {
 		$parser = new ArgvParser(array("index.php"));
 		$this->assertEquals(array(), $parser->getPositionalArgs());
 		$this->assertEquals(array(), $parser->getNamedArgs());
@@ -44,12 +44,12 @@ class ArgvParserTest extends TestCase {
 	/**
 	 * Test if exception is thrown if user provides a single -- without a value.
 	 */
-	function testExtractArgvNoName() {
+	function testExtractArgvNoName(): void {
 		$this->expectException(ArgvException::class);
-		$parser = new ArgvParser(array("index.php", "--"));
+		new ArgvParser(array("index.php", "--"));
 	}
 	
-	function testExtractArgvNamed() {
+	function testExtractArgvNamed(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$expect = array();
 		$expect["date"] = "2021-01-01";
@@ -59,19 +59,19 @@ class ArgvParserTest extends TestCase {
 		$this->assertEquals($expect, $parser->getNamedArgs());
 	}
 
-	function testHasNamedArg() {
+	function testHasNamedArg(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals(true, $parser->hasNamedArg("date"));
 	}
 
-	function testGetNamedArg() {
+	function testGetNamedArg(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals("2021-01-01", $parser->getNamedArg("date"));
 	}
 
-	function testGetNamedArgNotExisting() {
+	function testGetNamedArgNotExisting(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->expectException(OutOfBoundsException::class);
@@ -79,7 +79,7 @@ class ArgvParserTest extends TestCase {
 		$parser->getNamedArg("bogus");
 	}
 
-	function testExtractArgvBoolean() {
+	function testExtractArgvBoolean(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$expect = array();
 		$expect[] = "funrun";
@@ -87,7 +87,7 @@ class ArgvParserTest extends TestCase {
 		$this->assertEquals($expect, $parser->getBooleanFlags());
 	}
 
-	function testExtractArgvPositional() {
+	function testExtractArgvPositional(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf", "positional03");
 		$expect = array();
 		$expect[0] = "positional01";
@@ -97,13 +97,13 @@ class ArgvParserTest extends TestCase {
 		$this->assertEquals($expect, $parser->getPositionalArgs());
 	}
 
-	function testGetPositionalArg() {
+	function testGetPositionalArg(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals("positional01", $parser->getPositionalArg(0));
 	}
 
-	function testGetPositionalArgNotExisting() {
+	function testGetPositionalArgNotExisting(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->expectException(OutOfBoundsException::class);
@@ -111,13 +111,13 @@ class ArgvParserTest extends TestCase {
 		$parser->getPositionalArg(2);
 	}
 
-	function testHasBooleanFlag() {
+	function testHasBooleanFlag(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals(true, $parser->hasBooleanFlag("funrun"));
 	}
 
-	function testDoNotHaveBooleanFlag() {
+	function testDoNotHaveBooleanFlag(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals(false, $parser->hasBooleanFlag("exec"));
@@ -126,7 +126,7 @@ class ArgvParserTest extends TestCase {
 	/**
 	 * Checks if --help is contained within $argv.
 	 */
-	function testHasHelp() {
+	function testHasHelp(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf", "--help");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals(true, $parser->hasHelp());
@@ -135,7 +135,7 @@ class ArgvParserTest extends TestCase {
 	/**
 	 * Checks if --help is not contained within $argv.
 	 */
-	function testHasNoHelp() {
+	function testHasNoHelp(): void {
 		$argv = array("example.php", "positional01", "positional02", "--date=2021-01-01", "--funrun", "--novalue=", "--conf=/etc/example.conf");
 		$parser = new ArgvParser($argv);
 		$this->assertEquals(false, $parser->hasHelp());

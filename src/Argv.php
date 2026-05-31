@@ -20,8 +20,6 @@ use OutOfRangeException;
 class Argv {
 	private ArgvModel $model;
 	/** @var list<string> */
-	private array $argv;
-	/** @var list<string> */
 	private array $availablePositional = [];
 	/** @var array<string, string> */
 	private array $availableNamed = [];
@@ -35,7 +33,6 @@ class Argv {
 	 */
 	function __construct(array $argv, ArgvModel $model) {
 		$this->model = $model;
-		$this->argv = $argv;
 		$this->parser = new ArgvParser($argv);
 		$this->import();
 	}

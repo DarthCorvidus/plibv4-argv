@@ -4,10 +4,11 @@ namespace plibv4\argv;
 use plibv4\uservalue\UserValue;
 use PHPUnit\Framework\TestCase;
 require_once __DIR__."/../example/ArgvExample.php";
-class ArgvReferenceTest extends TestCase {
-	function testGetReferenceLines() {
+final class ArgvReferenceTest extends TestCase {
+	function testGetReferenceLines(): void {
 		$argv = new ArgvExample();
 		$ref = new ArgvReference($argv);
+		$expect = [];
 		$expect[] = "Positional Arguments:";
 		$expect[] = "\tArgument 1: input (mandatory)";
 		$expect[] = "\tArgument 2: output (mandatory)";
@@ -20,7 +21,7 @@ class ArgvReferenceTest extends TestCase {
 		$this->assertEquals(implode(PHP_EOL, $expect), $ref->getReference());
 	}
 	
-	function testPrintPositionalMandatory() {
+	function testPrintPositionalMandatory(): void {
 		$expect = [];
 		$expect[] = "Positional Arguments:";
 		$expect[] = "\tArgument 1: input (mandatory)";
@@ -32,7 +33,7 @@ class ArgvReferenceTest extends TestCase {
 		$this->assertEquals($expect, $ref->getReferenceLines());
 	}
 	
-	function testPrintPositionalOptional() {
+	function testPrintPositionalOptional(): void {
 		$expect = [];
 		$expect[] = "Positional Arguments:";
 		$expect[] = "\tArgument 1: input (optional)";
@@ -44,7 +45,7 @@ class ArgvReferenceTest extends TestCase {
 		$this->assertEquals($expect, $ref->getReferenceLines());
 	}
 	
-	function testPrintPositionalMixed() {
+	function testPrintPositionalMixed(): void {
 		$expect = [];
 		$expect[] = "Positional Arguments:";
 		$expect[] = "\tArgument 1: input (mandatory)";
@@ -56,7 +57,7 @@ class ArgvReferenceTest extends TestCase {
 		$this->assertEquals($expect, $ref->getReferenceLines());
 	}
 
-	function testPrintNamed() {
+	function testPrintNamed(): void {
 		$expect = [];
 		$expect[] = "Named Arguments:";
 		$expect[] = "\t--time (optional)";

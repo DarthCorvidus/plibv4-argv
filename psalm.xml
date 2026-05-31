@@ -13,17 +13,9 @@
 		<UnusedClass>
 			<errorLevel type="suppress">
 				<!-- this is a class library, therefore some code is unused -->
-				<file name="src/Argv.php" />
-				<file name="src/ArgvGeneric.php" />
-				<file name="src/ArgvReference.php" />
+				<directory name="tests" />						
 			</errorLevel>
 		</UnusedClass>
-		<UnusedMethod>
-			<errorLevel type="suppress">
-				<!-- See above -->
-				<file name="src/ArgvParser.php" />
-			</errorLevel>
-		</UnusedMethod>
 		<ClassMustBeFinal>
 			<errorLevel type="suppress">
 				<!-- actually, I extend ArgvGeneric & Argv very often. It is the
@@ -39,8 +31,10 @@
 	</issueHandlers>
     <projectFiles>
         <directory name="src" />
+		<directory name="tests" />
         <ignoreFiles>
             <directory name="vendor" />
+			<directory name="example" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
