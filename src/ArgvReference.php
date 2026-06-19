@@ -64,7 +64,7 @@ class ArgvReference {
 	/**
 	 * @return list<string>
 	 */
-	private function getBooleanReference(): array{
+	private function getBooleanReference(): array {
 		$lines = [];
 		$lines[] = "Boolean Arguments:";
 		foreach($this->argvModel->getBoolean() as $value) {
