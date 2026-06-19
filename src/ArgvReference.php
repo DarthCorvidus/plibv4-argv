@@ -10,11 +10,15 @@ use plibv4\longeststring\LongestString;
  * ArgvReference prints out a simple reference of defined arguments.
  */
 class ArgvReference {
-	private $argvModel;
+	private ArgvModel $argvModel;
 	function __construct(ArgvModel $model) {
 		$this->argvModel = $model;
 	}
 	
+	/**
+	 * Get reference as string
+	 * @return string Reference
+	 */
 	function getReference(): string {
 		$lines = $this->getReferenceLines();
 		return implode(PHP_EOL, $lines);
@@ -63,8 +67,6 @@ class ArgvReference {
 	private function getBooleanReference(): array{
 		$lines = [];
 		$lines[] = "Boolean Arguments:";
-		$longest = new LongestString();
-		$longest->addArray($this->argvModel->getBoolean());
 		foreach($this->argvModel->getBoolean() as $value) {
 			$lines[] = "\t--".$value;
 		}
